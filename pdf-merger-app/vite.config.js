@@ -9,16 +9,20 @@ function copyPublicFiles() {
     name: 'copy-public-files',
     closeBundle() {
       try {
+        const rootDir = process.cwd();
+        const publicDir = resolve(rootDir, 'public');
+        const distDir = resolve(rootDir, 'dist');
+        
         // Copy _redirects file
-        copyFileSync('public/_redirects', 'dist/_redirects')
+        copyFileSync(resolve(publicDir, '_redirects'), resolve(distDir, '_redirects'))
         console.log('Copied _redirects to dist/')
         
         // Copy manifest.json file
-        copyFileSync('public/manifest.json', 'dist/manifest.json')
+        copyFileSync(resolve(publicDir, 'manifest.json'), resolve(distDir, 'manifest.json'))
         console.log('Copied manifest.json to dist/')
         
         // Copy service worker
-        copyFileSync('public/sw.js', 'dist/sw.js')
+        copyFileSync(resolve(publicDir, 'sw.js'), resolve(distDir, 'sw.js'))
         console.log('Copied sw.js to dist/')
       } catch (error) {
         console.error('Error copying public files:', error)
