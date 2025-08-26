@@ -1,11 +1,11 @@
 // Service Worker for PDF Merger AI PWA
 const CACHE_NAME = 'pdf-merger-ai-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/pdf.worker.min.js',
-  '/pdf.min.js',
-  '/vite.svg'
+  './',
+  './index.html',
+  './pdf.worker.min.js',
+  './pdf.min.js',
+  './vite.svg'
 ];
 
 // Install event - cache essential files
