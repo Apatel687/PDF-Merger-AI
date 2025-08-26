@@ -15,7 +15,7 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
     accept: {
       'application/pdf': ['.pdf']
     },
-    maxSize: 50 * 1024 * 1024, // 50MB
+    maxSize: 500 * 1024 * 1024, // 500MB (increased from 50MB)
     multiple: true
   })
 
@@ -48,7 +48,7 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
           Browse Files
         </button>
         <p className="upload-info">
-          Supports PDF files only • Max file size: 50MB
+          Supports PDF files only • Max file size: 500MB
         </p>
       </div>
     </div>
