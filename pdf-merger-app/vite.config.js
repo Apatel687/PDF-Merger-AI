@@ -18,6 +18,9 @@ export default defineConfig({
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js'
       }
-    }
+    },
+    // Ensure public assets are copied to dist
+    assetsDir: 'assets',
+    copyPublicDir: true
   }
 })
