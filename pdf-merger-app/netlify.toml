@@ -3,7 +3,7 @@
   publish = "dist"
   base = "."
 
-# Redirects for SPA
+# Explicit redirect rule for SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
