@@ -3,11 +3,12 @@
   publish = "dist"
   base = "."
 
-# Redirects and headers for SPA
+# Redirects for SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = true
 
 # Security headers
 [[headers]]
