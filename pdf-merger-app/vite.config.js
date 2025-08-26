@@ -1,9 +1,35 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
+import { copyFileSync } from 'fs'
+
+// Custom plugin to ensure public files are copied
+function copyPublicFiles() {
+  return {
+    name: 'copy-public-files',
+    closeBundle() {
+      try {
+        // Copy _redirects file
+        copyFileSync('public/_redirects', 'dist/_redirects')
+        console.log('Copied _redirects to dist/')
+        
+        // Copy manifest.json file
+        copyFileSync('public/manifest.json', 'dist/manifest.json')
+        console.log('Copied manifest.json to dist/')
+        
+        // Copy service worker
+        copyFileSync('public/sw.js', 'dist/sw.js')
+        console.log('Copied sw.js to dist/')
+      } catch (error) {
+        console.error('Error copying public files:', error)
+      }
+    }
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), copyPublicFiles()],
   base: '/',
   publicDir: 'public',
   build: {
@@ -20,7 +46,6 @@ export default defineConfig({
         entryFileNames: 'assets/js/[name]-[hash].js'
       }
     },
-    // Ensure public assets are copied to dist
     assetsDir: 'assets',
     copyPublicDir: true
   }
