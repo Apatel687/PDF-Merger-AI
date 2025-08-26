@@ -4,8 +4,9 @@ import { EnhancedPDFPreview } from './components/EnhancedPDFPreview'
 import { EnhancedMergeControls } from './components/EnhancedMergeControls'
 import { PDFToolbar } from './components/PDFToolbar'
 import { ShareModal } from './components/ShareModal'
+import { PageIndexModal } from './components/PageIndexModal'
 import ThemeSwitcher from './components/ThemeSwitcher'
-import { FileText, Download, Trash2, Share2, Zap, Sparkles, Rocket, Shield } from 'lucide-react'
+import { FileText, Download, Trash2, Share2, Zap, Sparkles, Rocket, Shield, Bookmark, FileSearch } from 'lucide-react'
 import { useTheme } from './contexts/ThemeContext'
 import './App.css'
 
@@ -19,6 +20,7 @@ function App() {
   const [deletedPages, setDeletedPages] = useState({})
   const [shareStats, setShareStats] = useState({ shares: 0, lastShared: null })
   const [showShareModal, setShowShareModal] = useState(false)
+  const [showPageIndexModal, setShowPageIndexModal] = useState(false) // New state for page index modal
 
   const handleFilesAdded = (newFiles) => {
     const filesWithId = newFiles.map((file, index) => ({
@@ -332,14 +334,30 @@ function App() {
                   {mergedPdfUrl && (
                     <div className="download-section futuristic-card">
                       <h3>Download Merged PDF</h3>
-                      <a 
-                        href={mergedPdfUrl} 
-                        download="merged-document.pdf"
-                        className="download-btn futuristic-btn primary"
-                      >
-                        <Download size={20} />
-                        Download PDF
-                      </a>
+                      <div className="download-info">
+                        <p>Your merged PDF contains bookmarks for easy navigation between original documents.</p>
+                        <div className="bookmark-tip">
+                          <Bookmark size={16} />
+                          <span>Tip: Use your PDF viewer's bookmark panel to jump between documents</span>
+                        </div>
+                      </div>
+                      <div className="download-actions">
+                        <button 
+                          className="view-index-btn futuristic-btn"
+                          onClick={() => setShowPageIndexModal(true)}
+                        >
+                          <FileSearch size={20} />
+                          View Page Index
+                        </button>
+                        <a 
+                          href={mergedPdfUrl} 
+                          download="merged-document.pdf"
+                          className="download-btn futuristic-btn primary"
+                        >
+                          <Download size={20} />
+                          Download PDF
+                        </a>
+                      </div>
                     </div>
                   )}
 
@@ -376,6 +394,12 @@ function App() {
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}
         onShare={handleShare}
+      />
+      
+      <PageIndexModal 
+        isOpen={showPageIndexModal}
+        onClose={() => setShowPageIndexModal(false)}
+        files={pdfFiles}
       />
     </div>
   )

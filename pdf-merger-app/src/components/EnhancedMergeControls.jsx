@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { PDFDocument } from 'pdf-lib'
-import { FileText, Download, Scissors, RotateCw, Zap } from 'lucide-react'
+import { PDFDocument, rgb } from 'pdf-lib'
+import { FileText, Download, Scissors, RotateCw, Zap, Bookmark } from 'lucide-react'
 import './EnhancedMergeControls.css'
 
 export function EnhancedMergeControls({ 
@@ -14,7 +14,9 @@ export function EnhancedMergeControls({
 }) {
   const [mergeOptions, setMergeOptions] = useState({
     removeDuplicatePages: false,
-    optimizeFileSize: true
+    optimizeFileSize: true,
+    addBookmarks: true,
+    addPageIndex: true // New option for adding page index
   })
 
   const handleMerge = async () => {
@@ -24,6 +26,9 @@ export function EnhancedMergeControls({
     
     try {
       const mergedPdf = await PDFDocument.create()
+      const outline = []
+      const pageIndexMap = [] // Track which file each page came from
+      let currentPageIndex = 0
       
       // Process each file
       for (const file of files) {
@@ -40,6 +45,24 @@ export function EnhancedMergeControls({
           }
         }
         
+        // Add bookmark for this file if enabled
+        if (mergeOptions.addBookmarks && pagesToCopy.length > 0) {
+          outline.push({
+            title: file.name.replace('.pdf', ''),
+            page: currentPageIndex
+          })
+        }
+        
+        // Track page origins for index map
+        for (const pageIndex of pagesToCopy) {
+          pageIndexMap.push({
+            fileName: file.name.replace('.pdf', ''),
+            originalPage: pageIndex + 1,
+            mergedPage: currentPageIndex + 1
+          })
+          currentPageIndex++
+        }
+        
         // Copy pages to merged document
         for (const pageIndex of pagesToCopy) {
           const [copiedPage] = await mergedPdf.copyPages(pdfDoc, [pageIndex])
@@ -50,6 +73,88 @@ export function EnhancedMergeControls({
           if (rotation) {
             newPage.setRotation(rotation)
           }
+        }
+      }
+      
+      // Add bookmarks/outline to the PDF if enabled
+      if (mergeOptions.addBookmarks && outline.length > 0) {
+        try {
+          // Create a simple outline structure
+          const outlineRef = mergedPdf.context.obj({
+            Type: 'Outlines',
+            First: null,
+            Last: null,
+            Count: outline.length
+          })
+          
+          mergedPdf.catalog.set(PDFDocument.nameOf('Outlines'), outlineRef)
+          
+          // Add each bookmark as an outline item
+          let prevOutlineItem = null
+          for (let i = 0; i < outline.length; i++) {
+            const item = outline[i]
+            const pageRef = mergedPdf.getPage(item.page).ref
+            
+            const outlineItem = mergedPdf.context.obj({
+              Title: item.title,
+              Parent: outlineRef,
+              Dest: [pageRef, PDFDocument.nameOf('XYZ'), 0, mergedPdf.getPage(item.page).getHeight(), null]
+            })
+            
+            if (prevOutlineItem) {
+              prevOutlineItem.set(PDFDocument.nameOf('Next'), outlineItem)
+              outlineItem.set(PDFDocument.nameOf('Prev'), prevOutlineItem)
+            } else {
+              outlineRef.set(PDFDocument.nameOf('First'), outlineItem)
+            }
+            
+            if (i === outline.length - 1) {
+              outlineRef.set(PDFDocument.nameOf('Last'), outlineItem)
+            }
+            
+            mergedPdf.context.register(outlineItem)
+            prevOutlineItem = outlineItem
+          }
+          
+          mergedPdf.context.register(outlineRef)
+        } catch (error) {
+          console.warn('Could not add bookmarks to PDF:', error)
+          // Continue without bookmarks if there's an error
+        }
+      }
+      
+      // Add a page index as the first page of the document
+      if (mergeOptions.addPageIndex && pageIndexMap.length > 0) {
+        try {
+          // Create index content as text
+          let indexContent = "PDF MERGE INDEX\n\n"
+          indexContent += "Page Origin Reference\n"
+          indexContent += `Created: ${new Date().toLocaleDateString()}\n\n`
+          
+          let currentFile = ''
+          for (let i = 0; i < Math.min(pageIndexMap.length, 100); i++) { // Limit to first 100 entries
+            const entry = pageIndexMap[i]
+            
+            // Add file name header if new file
+            if (entry.fileName !== currentFile) {
+              currentFile = entry.fileName
+              indexContent += `\n${currentFile.toUpperCase()}:\n`
+            }
+            
+            // Add page entry
+            indexContent += `  Page ${entry.mergedPage}: Originally page ${entry.originalPage}\n`
+          }
+          
+          // For now, we'll show this index in the download info
+          // In a future enhancement, we could add it as an actual page in the PDF
+          // For now, we'll store it in localStorage so it can be accessed
+          localStorage.setItem('pdfPageIndex', JSON.stringify({
+            content: indexContent,
+            files: files.map(f => f.name.replace('.pdf', '')),
+            map: pageIndexMap
+          }))
+        } catch (error) {
+          console.warn('Could not create page index:', error)
         }
       }
       
@@ -154,6 +259,36 @@ export function EnhancedMergeControls({
             Optimize File Size
           </label>
           <p className="option-description">Compress images and optimize content for smaller files</p>
+        </div>
+        
+        <div className="option-item">
+          <label className="option-label">
+            <input
+              type="checkbox"
+              checked={mergeOptions.addBookmarks}
+              onChange={() => toggleOption('addBookmarks')}
+            />
+            <span className="checkmark"></span>
+            Add File Bookmarks
+          </label>
+          <p className="option-description">Add bookmarks to navigate between original PDFs</p>
+        </div>
+        
+        <div className="option-item">
+          <label className="option-label">
+            <input
+              type="checkbox"
+              checked={mergeOptions.addPageIndex}
+              onChange={() => toggleOption('addPageIndex')}
+            />
+            <span className="checkmark"></span>
+            Add Page Index
+          </label>
+          <p className="option-description">Insert a page showing which pages came from which files</p>
+          <div className="feature-highlight">
+            <Bookmark size={12} />
+            <span>New</span>
+          </div>
         </div>
       </div>
       

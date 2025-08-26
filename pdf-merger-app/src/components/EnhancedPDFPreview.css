@@ -222,6 +222,14 @@
   color: var(--accent-color);
 }
 
+.pdf-source {
+  background: linear-gradient(135deg, var(--accent-color), var(--ai-gradient-end));
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+  color: white;
+  font-weight: 500;
+}
+
 .header-actions {
   display: flex;
   gap: 0.5rem;
@@ -268,6 +276,24 @@
   overflow: hidden;
   border: 1px solid var(--border-color);
   background: var(--background-secondary);
+}
+
+.file-name-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: linear-gradient(135deg, var(--accent-color), var(--ai-gradient-end));
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.7rem;
+  font-weight: 600;
+  z-index: 10;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .page-overlay {

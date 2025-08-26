@@ -63,6 +63,9 @@ function PDFPageThumbnail({
   return (
     <div className={`pdf-page-thumbnail ${isSelected ? 'selected' : ''} ${viewMode}`}>
       <div className="thumbnail-container futuristic-card">
+        <div className="file-name-badge">
+          {file.name.replace('.pdf', '')}
+        </div>
         <Document
           file={file.file}
           onLoadSuccess={({ numPages }) => setNumPages(numPages)}
@@ -190,6 +193,7 @@ function SortablePDFItem({ file, onRemove, onRotatePage, onDeletePage, onSelectP
           <div className="pdf-details">
             <span className="pdf-size">{formatFileSize(file.size)}</span>
             {numPages && <span className="page-count">{numPages} pages</span>}
+            <span className="pdf-source">From: {file.name.replace('.pdf', '')}</span>
           </div>
         </div>
         
