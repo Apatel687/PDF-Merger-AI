@@ -9,6 +9,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- iOS Safari specific -->
+    <meta name="apple-mobile-web-app-title" content="PDF Merger AI">
+    <link rel="apple-touch-icon" href="/pdf-icon-192.png">
+    
+    <!-- Windows -->
+    <meta name="msapplication-TileImage" content="/pdf-icon-192.png">
+    <meta name="msapplication-TileColor" content="#3b82f6">
+    
     <!-- PDF.js setup - using local files for better reliability -->
     <script src="/pdf.min.js"></script>
     <title>PDF Merger Pro - Merge, Edit & Share PDFs</title>
@@ -16,5 +28,20 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
