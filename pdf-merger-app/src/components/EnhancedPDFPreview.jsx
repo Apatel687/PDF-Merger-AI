@@ -1,38 +1,20 @@
 import { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import { 
-  DndContext, 
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  rectSortingStrategy,
-} from '@dnd-kit/sortable'
-import {
-  useSortable,
-} from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { 
   FileText, 
-  X, 
-  GripVertical, 
+  Upload, 
+  Download, 
   RotateCw, 
+  Trash2, 
   Eye, 
-  Trash2,
-  Plus,
-  Minus,
-  ZoomIn,
+  Move, 
+  ZoomIn, 
   ZoomOut
 } from 'lucide-react'
 import './EnhancedPDFPreview.css'
 
-// Set up PDF.js worker
+// Set up PDF.js worker with local worker only
 pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`
 
 function PDFPageThumbnail({ 
@@ -71,6 +53,23 @@ function PDFPageThumbnail({
           onLoadSuccess={({ numPages }) => setNumPages(numPages)}
           loading={<div className="loading-placeholder">Loading...</div>}
           error={<div className="error-placeholder">Error loading PDF</div>}
+          options={{
+            cMapUrl: '/cmaps/',
+            cMapPacked: true,
+            standardFontDataUrl: '/standard_fonts/',
+            disableAutoFetch: true,
+            disableStream: true,
+            disableRange: true,
+            enableXfa: false,
+            verbosity: 0,
+            maxImageSize: 10485760,
+            isEvalSupported: false,
+            useSystemFonts: true,
+            disableFontFace: true,
+            disableCreateObjectURL: false,
+            pdfBug: false
+          }}
+
         >
           <Page
             pageNumber={pageIndex + 1}

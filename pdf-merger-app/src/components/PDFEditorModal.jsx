@@ -38,7 +38,7 @@ import {
 import { Document, Page, pdfjs } from 'react-pdf'
 import './PDFEditorModal.css'
 
-// Configure PDF.js worker - simplified configuration
+// Configure PDF.js worker with local worker only
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
 
 export const PDFEditorModal = ({ isOpen, onClose, onSave }) => {
@@ -1641,23 +1641,22 @@ export const PDFEditorModal = ({ isOpen, onClose, onSave }) => {
                           </div>
                         }
                         options={{
-                          cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
+                          cMapUrl: '/cmaps/',
                           cMapPacked: true,
-                          standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
-                          disableAutoFetch: true, // Disable for better performance with small files
-                          disableStream: true, // Disable for better performance with small files
-                          disableRange: true, // Disable for better performance with small files
-                          enableXfa: false, // Disable for better performance
-                          // Enhanced timeout and performance settings
-                          verbosity: 0, // Reduce console noise
-                          maxImageSize: 10485760, // 10MB max image size (reduced for small files)
-                          isEvalSupported: false, // Security improvement
-                          useSystemFonts: true, // Better font rendering
-                          // Additional performance optimizations for small files
-                          disableFontFace: true, // Disable font face for faster rendering
-                          disableCreateObjectURL: false, // Keep enabled for better performance
-                          pdfBug: false // Disable debugging for production
+                          standardFontDataUrl: '/standard_fonts/',
+                          disableAutoFetch: true,
+                          disableStream: true,
+                          disableRange: true,
+                          enableXfa: false,
+                          verbosity: 0,
+                          maxImageSize: 10485760,
+                          isEvalSupported: false,
+                          useSystemFonts: true,
+                          disableFontFace: true,
+                          disableCreateObjectURL: false,
+                          pdfBug: false
                         }}
+
                       >
                         <div className="pdf-page-wrapper"
                           style={{

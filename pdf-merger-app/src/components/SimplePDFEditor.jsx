@@ -3,7 +3,7 @@ import { Document, Page, pdfjs } from 'react-pdf'
 import { FileText, Upload, Download, ZoomIn, ZoomOut, RotateCw } from 'lucide-react'
 import './PDFEditorModal.css'
 
-// Configure PDF.js worker
+// Configure PDF.js worker with local worker only
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
 
 const SimplePDFEditor = () => {
@@ -267,6 +267,23 @@ const SimplePDFEditor = () => {
                       </button>
                     </div>
                   }
+                  options={{
+                    cMapUrl: '/cmaps/',
+                    cMapPacked: true,
+                    standardFontDataUrl: '/standard_fonts/',
+                    disableAutoFetch: true,
+                    disableStream: true,
+                    disableRange: true,
+                    enableXfa: false,
+                    verbosity: 0,
+                    maxImageSize: 10485760,
+                    isEvalSupported: false,
+                    useSystemFonts: true,
+                    disableFontFace: true,
+                    disableCreateObjectURL: false,
+                    pdfBug: false
+                  }}
+
                 >
                   <div 
                     className="pdf-page-container"

@@ -22,5 +22,10 @@ export default defineConfig({
     },
     assetsDir: 'assets',
     copyPublicDir: true
+  },
+  // Ensure SPA routing works
+  preview: {
+    port: 4173,
+    strictPort: true
   }
 })
