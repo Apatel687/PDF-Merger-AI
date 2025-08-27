@@ -43,9 +43,10 @@
   "screenshots": [
     {
       "src": "pdf-icon-512.png",
-      "sizes": "512x512",
+      "sizes": "1280x720",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "PDF Merger AI main interface"
     }
   ],
   "shortcuts": [
