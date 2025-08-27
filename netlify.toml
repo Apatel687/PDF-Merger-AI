@@ -3,6 +3,9 @@
   publish = "dist"
   base = "pdf-merger-app"
 
+[build.environment]
+  NODE_VERSION = "18"
+
 # Explicit redirect rule for SPA
 [[redirects]]
   from = "/*"
