@@ -1,6 +1,7 @@
 [build]
   command = "npm run build"
-  publish = "pdf-merger-app/dist"
+  publish = "dist"
+  base = "pdf-merger-app"
 
 # Explicit redirect rule for SPA
 [[redirects]]
