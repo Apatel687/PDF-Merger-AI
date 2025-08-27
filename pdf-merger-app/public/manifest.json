@@ -3,26 +3,7 @@
   "short_name": "PDF Merger AI",
   "name": "PDF Merger AI - Smart PDF Processing",
   "description": "Merge, split, and edit PDFs with AI-powered tools. Process documents locally in your browser.",
-  "icons": [
-    {
-      "src": "vite.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "vite.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
-    },
-    {
-      "src": "vite.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    }
-  ],
+  "icons": [],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#3b82f6",
@@ -34,19 +15,5 @@
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
-  "shortcuts": [
-    {
-      "name": "Merge PDFs",
-      "short_name": "Merge",
-      "description": "Merge multiple PDF files",
-      "url": ".",
-      "icons": [
-        {
-          "src": "pdf-icon-192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
-    }
-  ]
+  "shortcuts": []
 }
