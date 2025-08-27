@@ -40,15 +40,6 @@
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
-  "screenshots": [
-    {
-      "src": "pdf-icon-512.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "PDF Merger AI main interface"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Merge PDFs",
