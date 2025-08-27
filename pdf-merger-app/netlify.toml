@@ -1,6 +1,6 @@
 [build]
-  command = "npm run build"
-  publish = "pdf-merger-app/dist"
+  command = "npm install --legacy-peer-deps && npm run build"
+  publish = "dist"
   base = "pdf-merger-app"
 
 # Explicit redirect rule for SPA
