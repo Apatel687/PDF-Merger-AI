@@ -1,10 +1,10 @@
 [build]
   command = "npm run build"
-  publish = "pdf-merger-app/dist"
-  base = "pdf-merger-app"
+  publish = "dist"
+  base = "."
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 # Explicit redirect rule for SPA
 [[redirects]]
