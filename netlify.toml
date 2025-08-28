@@ -1,7 +1,7 @@
 [build]
   command = "npm run build"
-  publish = "dist"
-  base = "."
+  publish = "pdf-merger-app/dist"
+  base = "pdf-merger-app"
 
 [build.environment]
   NODE_VERSION = "20"
