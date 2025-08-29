@@ -1,0 +1,3 @@
+https://pdf-merger-app.netlify.app/
+https://pdf-merger-app.netlify.app/merge
+https://pdf-merger-app.netlify.app/about
