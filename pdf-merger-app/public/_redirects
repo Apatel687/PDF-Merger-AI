@@ -1,4 +1,6 @@
-/sitemap.xml /sitemap.xml 200!
-/sitemap.txt /sitemap.txt 200!
-/robots.txt /robots.txt 200!
-/* /index.html 200
+# Static files first
+/sitemap.xml   /sitemap.xml   200!
+/robots.txt    /robots.txt    200!
+
+# SPA fallback
+/*             /index.html    200

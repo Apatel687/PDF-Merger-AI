@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://pdf-merger-app.netlify.app/sitemap.txt
-Sitemap: https://pdf-merger-app.netlify.app/.well-known/sitemap.xml
+Sitemap: https://pdf-merger-app.netlify.app/sitemap.xml
