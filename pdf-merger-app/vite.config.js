@@ -9,8 +9,13 @@ export default defineConfig({
     {
       name: 'copy-seo-files',
       writeBundle() {
-        copyFileSync('public/sitemap.xml', 'dist/sitemap.xml')
-        copyFileSync('public/robots.txt', 'dist/robots.txt')
+        try {
+          copyFileSync('public/sitemap.xml', 'dist/sitemap.xml')
+          copyFileSync('public/robots.txt', 'dist/robots.txt')
+          console.log('SEO files copied successfully')
+        } catch (error) {
+          console.error('Failed to copy SEO files:', error)
+        }
       }
     }
   ],
