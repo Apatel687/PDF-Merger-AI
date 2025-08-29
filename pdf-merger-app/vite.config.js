@@ -10,9 +10,28 @@ export default defineConfig({
       name: 'copy-seo-files',
       writeBundle() {
         try {
-          copyFileSync('public/sitemap.xml', 'dist/sitemap.xml')
-          copyFileSync('public/robots.txt', 'dist/robots.txt')
-          console.log('SEO files copied successfully')
+          const fs = require('fs')
+          const path = require('path')
+          
+          // Ensure dist directory exists
+          if (!fs.existsSync('dist')) {
+            fs.mkdirSync('dist', { recursive: true })
+          }
+          
+          // Copy all SEO files
+          fs.copyFileSync('public/sitemap.xml', 'dist/sitemap.xml')
+          fs.copyFileSync('public/robots.txt', 'dist/robots.txt')
+          fs.copyFileSync('public/sitemap.txt', 'dist/sitemap.txt')
+          
+          // Copy .well-known directory
+          if (fs.existsSync('public/.well-known')) {
+            if (!fs.existsSync('dist/.well-known')) {
+              fs.mkdirSync('dist/.well-known', { recursive: true })
+            }
+            fs.copyFileSync('public/.well-known/sitemap.xml', 'dist/.well-known/sitemap.xml')
+          }
+          
+          console.log('All SEO files copied to dist/')
         } catch (error) {
           console.error('Failed to copy SEO files:', error)
         }
