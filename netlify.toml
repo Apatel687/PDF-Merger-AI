@@ -6,12 +6,24 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# Explicit redirect rule for SPA
+# Static files should be served directly
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap.xml"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt"
+  status = 200
+  force = false
+
+# SPA redirect for everything else
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = true
 
 # Redirects for SEO
 [[redirects]]
@@ -42,3 +54,16 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src 'none'; object-src 'none'"
+
+# Headers for sitemap and robots
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Content-Type = "application/xml; charset=utf-8"
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
+    Cache-Control = "public, max-age=3600"
