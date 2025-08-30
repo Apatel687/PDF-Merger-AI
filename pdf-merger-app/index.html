@@ -91,19 +91,19 @@
     <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
       <div style="background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; gap: 8px;">
         <!-- Facebook Share -->
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https://pdf-merger-app.netlify.app/" target="_blank" style="color: #1877f2; text-decoration: none; font-size: 18px; padding: 5px;" title="Share on Facebook">📘</a>
+        <a href="#" onclick="shareToFacebook(); return false;" style="color: #1877f2; text-decoration: none; font-size: 18px; padding: 5px; cursor: pointer;" title="Share on Facebook">📘</a>
         
         <!-- Twitter Share -->
-        <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20free%20PDF%20merger%20tool!%20https://pdf-merger-app.netlify.app/" target="_blank" style="color: #1da1f2; text-decoration: none; font-size: 18px; padding: 5px;" title="Share on Twitter">🐦</a>
+        <a href="#" onclick="shareToTwitter(); return false;" style="color: #1da1f2; text-decoration: none; font-size: 18px; padding: 5px; cursor: pointer;" title="Share on Twitter">🐦</a>
         
         <!-- LinkedIn Share -->
-        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://pdf-merger-app.netlify.app/" target="_blank" style="color: #0077b5; text-decoration: none; font-size: 18px; padding: 5px;" title="Share on LinkedIn">💼</a>
+        <a href="#" onclick="shareToLinkedIn(); return false;" style="color: #0077b5; text-decoration: none; font-size: 18px; padding: 5px; cursor: pointer;" title="Share on LinkedIn">💼</a>
         
         <!-- WhatsApp Share -->
-        <a href="https://wa.me/?text=Check out this free PDF merger tool! https://pdf-merger-app.netlify.app/" target="_blank" style="color: #25d366; text-decoration: none; font-size: 18px; padding: 5px;" title="Share on WhatsApp">💬</a>
+        <a href="#" onclick="shareToWhatsApp(); return false;" style="color: #25d366; text-decoration: none; font-size: 18px; padding: 5px; cursor: pointer;" title="Share on WhatsApp">💬</a>
         
         <!-- Copy Link -->
-        <button onclick="navigator.clipboard.writeText('https://pdf-merger-app.netlify.app/'); alert('Link copied!')" style="background: none; border: none; font-size: 18px; padding: 5px; cursor: pointer;" title="Copy Link">🔗</button>
+        <button onclick="copyReferralLink()" style="background: none; border: none; font-size: 18px; padding: 5px; cursor: pointer;" title="Copy Referral Link">🔗</button>
       </div>
     </div>
     
@@ -114,6 +114,75 @@
       <a href="/terms.html" style="margin: 0 8px; color: #666; text-decoration: none;">Terms</a>
     </footer>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Referral System -->
+    <script>
+      // Generate unique user ID for referrals
+      function getUserId() {
+        let userId = localStorage.getItem('userId');
+        if (!userId) {
+          userId = 'user_' + Math.random().toString(36).substr(2, 9);
+          localStorage.setItem('userId', userId);
+        }
+        return userId;
+      }
+      
+      // Generate referral link
+      function getReferralLink() {
+        const userId = getUserId();
+        return `https://pdf-merger-app.netlify.app/?ref=${userId}`;
+      }
+      
+      // Share functions
+      function shareToFacebook() {
+        const url = getReferralLink();
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+      }
+      
+      function shareToTwitter() {
+        const url = getReferralLink();
+        const text = 'Check out this free PDF merger tool! ';
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text + url)}`, '_blank');
+      }
+      
+      function shareToLinkedIn() {
+        const url = getReferralLink();
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+      }
+      
+      function shareToWhatsApp() {
+        const url = getReferralLink();
+        const text = 'Check out this free PDF merger tool! ';
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + url)}`, '_blank');
+      }
+      
+      function copyReferralLink() {
+        const url = getReferralLink();
+        navigator.clipboard.writeText(url).then(() => {
+          alert('Referral link copied! Share it to earn rewards.');
+        }).catch(() => {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = url;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          alert('Referral link copied! Share it to earn rewards.');
+        });
+      }
+      
+      // Track referrals on page load
+      window.addEventListener('load', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const referrer = urlParams.get('ref');
+        if (referrer) {
+          console.log('Referred by:', referrer);
+          // You can track this referral in your analytics
+          localStorage.setItem('referredBy', referrer);
+        }
+      });
+    </script>
     
     <!-- Service Worker Registration -->
     <script>
