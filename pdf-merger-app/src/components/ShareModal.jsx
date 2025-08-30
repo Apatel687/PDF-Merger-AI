@@ -19,33 +19,48 @@ export function ShareModal({ isOpen, onClose, pdfUrl, fileName }) {
     }
   }, [isOpen, onClose])
 
+  // Get referral link for sharing
+  const getReferralUrl = () => {
+    if (window.getReferralLink) {
+      return window.getReferralLink()
+    }
+    return 'https://pdf-merger-app.netlify.app/'
+  }
+
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(pdfUrl)
-      alert('Link copied to clipboard!')
+      const referralUrl = getReferralUrl()
+      await navigator.clipboard.writeText(referralUrl)
+      alert('Referral link copied to clipboard!')
     } catch (err) {
       console.error('Failed to copy:', err)
     }
   }
 
   const handleEmailShare = () => {
-    window.open(`mailto:?subject=Check out this PDF&body=I wanted to share this PDF with you: ${encodeURIComponent(pdfUrl)}`)
+    const referralUrl = getReferralUrl()
+    window.open(`mailto:?subject=Check out this free PDF merger tool&body=I wanted to share this amazing PDF merger tool with you: ${encodeURIComponent(referralUrl)}`)
   }
 
   const handleWhatsAppShare = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(`Check out this PDF: ${pdfUrl}`)}`)
+    const referralUrl = getReferralUrl()
+    window.open(`https://wa.me/?text=${encodeURIComponent(`Check out this free PDF merger tool! ${referralUrl}`)}`)
   }
 
   const handleFacebookShare = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pdfUrl)}`)
+    const referralUrl = getReferralUrl()
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralUrl)}`)
   }
 
   const handleTwitterShare = () => {
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out this PDF')}&url=${encodeURIComponent(pdfUrl)}`)
+    const referralUrl = getReferralUrl()
+    const text = `Check out this free PDF merger tool! ${referralUrl}`
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`)
   }
 
   const handleLinkedInShare = () => {
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pdfUrl)}`)
+    const referralUrl = getReferralUrl()
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralUrl)}`)
   }
 
   if (!isOpen) return null
