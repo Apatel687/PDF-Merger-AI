@@ -3,6 +3,9 @@ import { X, Copy, Mail, MessageCircle, Facebook, Twitter, Linkedin } from 'lucid
 import './ShareModal.css'
 
 export function ShareModal({ isOpen, onClose, pdfUrl, fileName }) {
+  const [showReferralLink, setShowReferralLink] = useState(false)
+  const [referralUrl, setReferralUrl] = useState('')
+
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.keyCode === 27) onClose()
@@ -63,16 +66,14 @@ export function ShareModal({ isOpen, onClose, pdfUrl, fileName }) {
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralUrl)}`)
   }
 
-  if (!isOpen) return null
-
-  const [showReferralLink, setShowReferralLink] = useState(false)
-  const [referralUrl, setReferralUrl] = useState('')
-
   const handleShowLink = () => {
     const url = getReferralUrl()
+    console.log('Generated referral URL:', url)
     setReferralUrl(url)
     setShowReferralLink(!showReferralLink)
   }
+
+  if (!isOpen) return null
 
   const shareOptions = [
     {
