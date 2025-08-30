@@ -65,12 +65,27 @@ export function ShareModal({ isOpen, onClose, pdfUrl, fileName }) {
 
   if (!isOpen) return null
 
+  const [showReferralLink, setShowReferralLink] = useState(false)
+  const [referralUrl, setReferralUrl] = useState('')
+
+  const handleShowLink = () => {
+    const url = getReferralUrl()
+    setReferralUrl(url)
+    setShowReferralLink(!showReferralLink)
+  }
+
   const shareOptions = [
     {
       icon: Copy,
       label: 'Copy Link',
       action: handleCopyLink,
       color: '#6b7280'
+    },
+    {
+      icon: () => <span style={{fontSize: '16px'}}>🔗</span>,
+      label: 'Show Link',
+      action: handleShowLink,
+      color: '#8b5cf6'
     },
     {
       icon: Mail,
@@ -133,14 +148,54 @@ export function ShareModal({ isOpen, onClose, pdfUrl, fileName }) {
             </div>
           </div>
           
+          {showReferralLink && (
+            <div style={{
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+              color: 'white',
+              padding: '12px',
+              borderRadius: '8px',
+              margin: '15px 0',
+              fontSize: '12px',
+              wordBreak: 'break-all',
+              textAlign: 'center'
+            }}>
+              <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>Your Referral Link:</div>
+              <div style={{ background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '4px' }}>
+                {referralUrl}
+              </div>
+              <button 
+                onClick={() => {
+                  navigator.clipboard.writeText(referralUrl)
+                  alert('Referral link copied!')
+                }}
+                style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '4px 12px',
+                  borderRadius: '4px',
+                  marginTop: '8px',
+                  cursor: 'pointer',
+                  fontSize: '11px'
+                }}
+              >
+                Copy Link
+              </button>
+            </div>
+          )}
+          
           <div className="share-options">
             {shareOptions.map((option, index) => (
               <button
                 key={index}
                 className="share-option futuristic-btn"
                 onClick={() => {
-                  option.action()
-                  onClose()
+                  if (option.label === 'Show Link') {
+                    option.action()
+                  } else {
+                    option.action()
+                    onClose()
+                  }
                 }}
                 style={{ '--option-color': option.color }}
               >
