@@ -141,8 +141,8 @@
       
       function shareToTwitter() {
         const url = getReferralLink();
-        const text = 'Check out this free PDF merger tool! ';
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text + url)}`, '_blank');
+        const text = 'Check out this free PDF merger tool! ' + url;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
       }
       
       function shareToLinkedIn() {
