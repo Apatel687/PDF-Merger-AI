@@ -87,9 +87,18 @@
     <!-- Clean App Container -->
     <div id="root"></div>
     
+    <!-- Referral Display -->
+    <div id="referralDisplay" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 15px; border-radius: 20px; font-size: 12px; z-index: 1001; box-shadow: 0 2px 10px rgba(0,0,0,0.2); display: none;">
+      <span id="referralText">Your referral: </span>
+      <button onclick="copyReferralLink()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; cursor: pointer; margin-left: 5px;">Copy</button>
+    </div>
+    
     <!-- Social Share Buttons -->
     <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
-      <div style="background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; gap: 8px;">
+      <div style="background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; gap: 8px; max-width: 200px;">
+        <!-- Show Referral Button -->
+        <button onclick="toggleReferralDisplay()" style="background: #667eea; color: white; border: none; font-size: 12px; padding: 5px 8px; border-radius: 5px; cursor: pointer; width: 100%; margin-bottom: 5px;" title="Show My Referral Link">My Referral Link</button>
+        
         <!-- Facebook Share -->
         <a href="#" onclick="shareToFacebook(); return false;" style="color: #1877f2; text-decoration: none; font-size: 18px; padding: 5px; cursor: pointer;" title="Share on Facebook">📘</a>
         
@@ -106,6 +115,27 @@
         <button onclick="copyReferralLink()" style="background: none; border: none; font-size: 18px; padding: 5px; cursor: pointer;" title="Copy Referral Link">🔗</button>
       </div>
     </div>
+    
+    <!-- Mobile Responsive Styles -->
+    <style>
+      @media (max-width: 768px) {
+        #referralDisplay {
+          position: fixed !important;
+          top: 10px !important;
+          left: 10px !important;
+          right: 10px !important;
+          transform: none !important;
+          font-size: 11px !important;
+        }
+        
+        .social-share-container {
+          position: fixed !important;
+          top: 60px !important;
+          right: 10px !important;
+          max-width: 150px !important;
+        }
+      }
+    </style>
     
     <!-- Footer Navigation (minimal) -->
     <footer style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); padding: 8px; text-align: center; font-size: 12px; border-top: 1px solid #eee; z-index: 1000;">
@@ -141,8 +171,8 @@
       
       function shareToTwitter() {
         const url = getReferralLink();
-        const text = 'Check out this free PDF merger tool! ' + url;
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+        const text = 'Check out this free PDF merger tool!';
+        window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
       }
       
       function shareToLinkedIn() {
@@ -154,6 +184,22 @@
         const url = getReferralLink();
         const text = 'Check out this free PDF merger tool! ';
         window.open(`https://wa.me/?text=${encodeURIComponent(text + url)}`, '_blank');
+      }
+      
+      function toggleReferralDisplay() {
+        const display = document.getElementById('referralDisplay');
+        const text = document.getElementById('referralText');
+        const url = getReferralLink();
+        
+        if (display.style.display === 'none' || !display.style.display) {
+          text.textContent = 'Your referral: ' + url;
+          display.style.display = 'block';
+          setTimeout(() => {
+            display.style.display = 'none';
+          }, 5000);
+        } else {
+          display.style.display = 'none';
+        }
       }
       
       function copyReferralLink() {
