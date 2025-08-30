@@ -166,24 +166,28 @@
       // Share functions
       function shareToFacebook() {
         const url = getReferralLink();
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        console.log('Facebook share URL:', url);
+        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank');
       }
       
       function shareToTwitter() {
         const url = getReferralLink();
-        const text = 'Check out this free PDF merger tool!';
-        window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        const text = 'Check out this free PDF merger tool! ' + url;
+        console.log('Twitter share text:', text);
+        window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
       }
       
       function shareToLinkedIn() {
         const url = getReferralLink();
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+        console.log('LinkedIn share URL:', url);
+        window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url), '_blank');
       }
       
       function shareToWhatsApp() {
         const url = getReferralLink();
-        const text = 'Check out this free PDF merger tool! ';
-        window.open(`https://wa.me/?text=${encodeURIComponent(text + url)}`, '_blank');
+        const text = 'Check out this free PDF merger tool! ' + url;
+        console.log('WhatsApp share text:', text);
+        window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
       }
       
       function toggleReferralDisplay() {
@@ -191,12 +195,14 @@
         const text = document.getElementById('referralText');
         const url = getReferralLink();
         
+        console.log('Generated referral URL:', url);
+        
         if (display.style.display === 'none' || !display.style.display) {
-          text.textContent = 'Your referral: ' + url;
+          text.textContent = url;
           display.style.display = 'block';
           setTimeout(() => {
             display.style.display = 'none';
-          }, 5000);
+          }, 8000);
         } else {
           display.style.display = 'none';
         }
