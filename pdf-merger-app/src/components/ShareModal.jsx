@@ -24,9 +24,10 @@ export function ShareModal({ isOpen, onClose, pdfUrl, fileName }) {
 
   // Get referral link for sharing
   const getReferralUrl = () => {
-    if (window.getReferralLink) {
+    if (typeof window !== 'undefined' && window.getReferralLink) {
       return window.getReferralLink()
     }
+    // Fallback to base URL if referral system not available
     return 'https://pdf-merger-app.netlify.app/'
   }
 
@@ -37,6 +38,14 @@ export function ShareModal({ isOpen, onClose, pdfUrl, fileName }) {
       alert('Referral link copied to clipboard!')
     } catch (err) {
       console.error('Failed to copy:', err)
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = referralUrl
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+      alert('Referral link copied to clipboard!')
     }
   }
 

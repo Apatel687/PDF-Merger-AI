@@ -394,7 +394,7 @@ function App() {
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}
         onShare={handleShare}
-        pdfUrl="https://pdf-merger-app.netlify.app/"
+        pdfUrl={window.location.href}
         fileName="PDF Merger AI"
       />
       
