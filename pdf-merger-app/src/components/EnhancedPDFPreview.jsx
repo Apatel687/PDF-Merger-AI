@@ -1,5 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable'
+import {
+  CSS,
+} from '@dnd-kit/utilities'
 import { 
   FileText, 
   Upload, 
@@ -9,12 +27,21 @@ import {
   Eye, 
   Move, 
   ZoomIn, 
-  ZoomOut
+  ZoomOut,
+  GripVertical,
+  X,
+  Plus,
+  Minus
 } from 'lucide-react'
 import './EnhancedPDFPreview.css'
 
-// Set up PDF.js worker with local worker only
-pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`
+// Set up PDF.js worker with better error handling
+try {
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+} catch (error) {
+  console.warn('Using fallback PDF worker:', error)
+  pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`
+}
 
 function PDFPageThumbnail({ 
   file, 
