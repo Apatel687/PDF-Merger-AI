@@ -181,6 +181,9 @@ function Home() {
             <button className="futuristic-btn" onClick={() => handleFeatureClick('merge')}>Merge PDFs</button>
             <button className="futuristic-btn" onClick={() => handleFeatureClick('summarize')}>Summarize PDF</button>
             <button className="futuristic-btn" onClick={() => handleFeatureClick('ask')}>Ask your PDF</button>
+            <button className="futuristic-btn" onClick={() => navigate('/images')}>Image Tools</button>
+            <button className="futuristic-btn" onClick={() => navigate('/office')}>Office Tools</button>
+            <button className="futuristic-btn" onClick={() => navigate('/annotate')}>Annotation</button>
             <button className="futuristic-btn" onClick={() => handleFeatureClick('share')}>Share</button>
           </div>
           {pdfFiles.length === 0 ? (
