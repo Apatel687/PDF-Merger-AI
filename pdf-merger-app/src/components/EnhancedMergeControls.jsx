@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useToast } from './Toast'
 import { PDFDocument, rgb } from 'pdf-lib'
 import { FileText, Download, Scissors, RotateCw, Zap, Bookmark } from 'lucide-react'
 import './EnhancedMergeControls.css'
@@ -12,6 +13,7 @@ export function EnhancedMergeControls({
   fileRotations,
   deletedPages
 }) {
+  const { notify } = useToast()
   const [mergeOptions, setMergeOptions] = useState({
     removeDuplicatePages: false,
     optimizeFileSize: true,
@@ -175,9 +177,10 @@ export function EnhancedMergeControls({
       const mergedPdfUrl = URL.createObjectURL(mergedPdfBlob)
       
       onMergeComplete({ url: mergedPdfUrl, name: (outputName && outputName.trim()) || 'merged-document.pdf' })
+      notify('Merge successful. Your PDF is ready to download.', 'success')
     } catch (error) {
       console.error('Error merging PDFs:', error)
-      alert('Failed to merge PDFs. Please try again.')
+      notify('Failed to merge PDFs. Please try again.', 'error')
     } finally {
       setIsLoading(false)
     }
@@ -249,9 +252,10 @@ export function EnhancedMergeControls({
       }
       
       onSplitComplete(splitResults)
+      notify(`Split complete. Generated ${splitResults.length} files.`, 'success')
     } catch (error) {
       console.error('Error splitting PDFs:', error)
-      alert('Failed to split PDFs. Please try again.')
+      notify('Failed to split PDFs. Please try again.', 'error')
     } finally {
       setIsLoading(false)
     }

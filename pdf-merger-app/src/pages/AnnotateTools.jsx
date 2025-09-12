@@ -4,9 +4,11 @@ import ThemeSwitcher from '../components/ThemeSwitcher'
 import { FileUpload } from '../components/FileUpload'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import SEO from '../components/SEO'
+import { useToast } from '../components/Toast'
 
 function AnnotateTools() {
   const navigate = useNavigate()
+  const { notify } = useToast()
   const [pdfFile, setPdfFile] = useState(null)
   const [isBusy, setIsBusy] = useState(false)
   const [wmText, setWmText] = useState('CONFIDENTIAL')
@@ -232,6 +234,7 @@ function AnnotateTools() {
       const bytes = await pdfDoc.save()
       const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }))
       setDownloadUrl(url)
+      notify('Changes applied. Your PDF is ready to download.', 'success')
     } finally {
       setIsBusy(false)
     }
