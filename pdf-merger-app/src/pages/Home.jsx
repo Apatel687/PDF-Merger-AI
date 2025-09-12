@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { FileUpload } from '../components/FileUpload'
 import { EnhancedPDFPreview } from '../components/EnhancedPDFPreview'
 import { EnhancedMergeControls } from '../components/EnhancedMergeControls'
@@ -9,6 +9,7 @@ import { PageIndexModal } from '../components/PageIndexModal'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import { FileText, Download, Trash2, Share2, Zap, Sparkles, Rocket, Shield, Bookmark, FileSearch, MessageSquare } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
+import SEO from '../components/SEO'
 
 function Home() {
   const { theme, accentColor } = useTheme()
@@ -139,6 +140,27 @@ function Home() {
 
   return (
     <div className="app">
+      <SEO 
+        title="Free PDF Tools Online – Merge, Split, Compress | AI & Privacy‑First"
+        description="Free unlimited PDF tools (no signup). Merge PDF free online, split, compress, convert PDF ⇆ Word/Excel/PPT, images ⇆ PDF, AI PDF summarizer, Ask your PDF (chat). Local, secure, browser-based."
+        keywords={[
+          'Free PDF tools online','Merge PDF free online','Split PDF instantly','Compress PDF online free',
+          'Convert PDF to Word free','Convert Word to PDF online','Convert Excel to PDF free','Convert PowerPoint to PDF free',
+          'AI PDF summarizer free','Chat with PDF online','Privacy-first PDF editor','Local PDF tools (no server upload)'
+        ]}
+        canonical={window.location.origin + '/'}
+        ogImage={window.location.origin + '/pdf-icon-512.png'}
+        jsonLd={{
+          '@context':'https://schema.org',
+          '@type':'WebApplication',
+          'name':'PDF Merger AI',
+          'url':window.location.origin + '/',
+          'applicationCategory':'Utility',
+          'operatingSystem':'Web',
+          'offers':{ '@type':'Offer', price:'0', priceCurrency:'USD' },
+          'featureList':[ 'Merge PDF','Split PDF','Compress PDF','PDF to Word','Word to PDF','Excel to PDF','PPT to PDF','Images to PDF','PDF to images','AI PDF summarizer','Ask PDF','Annotate','Add Watermark','Add Page Numbers' ]
+        }}
+      />
       <ThemeSwitcher />
       
       <header className="app-header futuristic-card">
@@ -190,13 +212,8 @@ function Home() {
             <div className="welcome-section">
               <div className="hero-section">
                 <div className="hero-content">
-                  <h2 className="hero-title gradient-text">
-                    Transform Your PDF Workflow
-                  </h2>
-                  <p className="hero-description">
-                    Merge, split, edit, and share PDFs with our AI-powered tool. 
-                    Experience the future of document processing today.
-                  </p>
+                  <h2 className="hero-title gradient-text">Best Free PDF Merger with AI</h2>
+                  <p className="hero-description">Browser-based PDF tool (offline support): merge, split, compress, convert Office ⇆ PDF, and summarize with AI. Free unlimited PDF tools, privacy-first, no uploads.</p>
                 </div>
                 
                 <div className="ai-features">
@@ -205,8 +222,8 @@ function Home() {
                       <Zap size={24} />
                     </div>
                     <div className="feature-content">
-                      <h3>Lightning Fast</h3>
-                      <p>Process documents in seconds with our optimized engine</p>
+                      <h3>Lightning Fast PDF Tools</h3>
+                      <p>Split PDF instantly and compress PDF online free in your browser</p>
                     </div>
                   </div>
                   
@@ -215,8 +232,8 @@ function Home() {
                       <FileText size={24} />
                     </div>
                     <div className="feature-content">
-                      <h3>AI Enhanced</h3>
-                      <p>Smart algorithms for better document handling</p>
+                      <h3>AI PDF Intelligence</h3>
+                      <p>AI PDF summarizer free and Ask questions to PDF (AI Q&A)</p>
                     </div>
                   </div>
                   
@@ -225,8 +242,8 @@ function Home() {
                       <Share2 size={24} />
                     </div>
                     <div className="feature-content">
-                      <h3>Seamless Sharing</h3>
-                      <p>Share your documents across all platforms</p>
+                      <h3>Seamless & Secure</h3>
+                      <p>Free unlimited PDF tools (no signup) with privacy-first design</p>
                     </div>
                   </div>
                   
@@ -235,8 +252,8 @@ function Home() {
                       <Shield size={24} />
                     </div>
                     <div className="feature-content">
-                      <h3>Secure & Private</h3>
-                      <p>All processing happens locally in your browser</p>
+                      <h3>Local & Offline</h3>
+                      <p>Local PDF tools (no server upload). Offline PDF tools for browser</p>
                     </div>
                   </div>
                 </div>
@@ -254,8 +271,8 @@ function Home() {
                     <div className="action-content">
                       <FileText size={32} />
                       <div className="action-text">
-                        <h4>Merge PDFs</h4>
-                        <p>Combine multiple PDF files into one document</p>
+                        <h4>Merge PDF Free Online</h4>
+                        <p>Combine multiple PDF files into one document securely</p>
                       </div>
                     </div>
                     <span className="action-indicator">Click to start →</span>
@@ -268,8 +285,8 @@ function Home() {
                     <div className="action-content">
                       <FileSearch size={32} />
                       <div className="action-text">
-                        <h4>Summarize PDF</h4>
-                        <p>Generate a concise summary locally</p>
+                        <h4>AI PDF Summarizer</h4>
+                        <p>AI document summarizer free. Summarize long documents</p>
                       </div>
                     </div>
                     <span className="action-indicator">Go to Summarizer →</span>
@@ -282,8 +299,8 @@ function Home() {
                     <div className="action-content">
                       <MessageSquare size={32} />
                       <div className="action-text">
-                        <h4>Ask your PDF</h4>
-                        <p>Chat with your document content</p>
+                        <h4>Chat with PDF Online</h4>
+                        <p>Free AI PDF chatbot for intelligent document Q&A</p>
                       </div>
                     </div>
                     <span className="action-indicator">Go to Q&A →</span>
@@ -296,8 +313,8 @@ function Home() {
                     <div className="action-content">
                       <Share2 size={32} />
                       <div className="action-text">
-                        <h4>Share Anywhere</h4>
-                        <p>Share your PDFs via email, social media, or direct link</p>
+                        <h4>Free PWA PDF Tools</h4>
+                        <p>Browser-based PDF tool with offline support and no watermark</p>
                       </div>
                     </div>
                     <span className="action-indicator">Click to share →</span>
@@ -453,6 +470,20 @@ function Home() {
         onClose={() => setShowPageIndexModal(false)}
         files={pdfFiles}
       />
+      {/* Internal SEO links */}
+      <div className="container" style={{ padding: 16 }}>
+        <nav className="muted" aria-label="Helpful links">
+          <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 12, listStyle: 'none', padding: 0, margin: 0 }}>
+            <li><Link to="/summarize">How to summarize PDF with AI online</Link></li>
+            <li><Link to="/ask">Chat with research paper PDF online</Link></li>
+            <li><Link to="/images">Convert JPG to PDF online free</Link></li>
+            <li><Link to="/office">Convert docx to PDF free tool</Link></li>
+            <li><Link to="/annotate">Add watermark to PDF online</Link></li>
+            <li><Link to="/faq">FAQ</Link></li>
+            <li><Link to="/blog">Blog</Link></li>
+          </ul>
+        </nav>
+      </div>
     </div>
   )
 }

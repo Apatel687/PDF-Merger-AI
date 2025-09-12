@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import { FileUpload } from '../components/FileUpload'
 import { extractPdfTextWithPages, simpleSummarize } from '../utils/pdfText'
+import SEO from '../components/SEO'
 
 function Summarize() {
   const navigate = useNavigate()
@@ -49,6 +50,14 @@ function Summarize() {
 
   return (
     <div className="app">
+      <SEO 
+        title="AI PDF Summarizer Free – Summarize PDF Online (Local, Private)"
+        description="Summarize long documents with AI locally in your browser. Free AI document summarizer for PDFs. Privacy-first: no uploads."
+        keywords={[ 'AI PDF summarizer free','Summarize long documents AI tool','Document intelligence AI tool','Local AI PDF tool (privacy-first)' ]}
+        canonical={window.location.origin + '/summarize'}
+        ogImage={window.location.origin + '/pdf-icon-512.png'}
+        jsonLd={{ '@context':'https://schema.org','@type':'WebPage','name':'AI PDF Summarizer','url':window.location.origin + '/summarize' }}
+      />
       <ThemeSwitcher />
 
       <header className="app-header futuristic-card">
@@ -71,8 +80,8 @@ function Summarize() {
       <main className="app-main">
         <div className="container">
           <div className="welcome-section">
-            <h2 className="hero-title gradient-text">Summarize PDF</h2>
-            <p className="hero-description">All processing happens locally in your browser. Your files never leave your device.</p>
+            <h2 className="hero-title gradient-text">AI PDF Summarizer Free</h2>
+            <p className="hero-description">How to summarize PDF with AI online: our local AI document summarizer runs fully in your browser for privacy.</p>
 
             <FileUpload onFilesAdded={onFilesAdded} />
 

@@ -6,6 +6,8 @@ import AskPDF from './pages/AskPDF'
 import ImageTools from './pages/ImageTools'
 import OfficeTools from './pages/OfficeTools'
 import AnnotateTools from './pages/AnnotateTools'
+import FAQ from './pages/FAQ'
+import Blog from './pages/Blog'
 import './App.css'
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
         <Route path="/images" element={<ImageTools />} />
         <Route path="/office" element={<OfficeTools />} />
         <Route path="/annotate" element={<AnnotateTools />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/blog" element={<Blog />} />
       </Routes>
     </Router>
   )

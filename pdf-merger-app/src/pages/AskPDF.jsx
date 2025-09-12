@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import { FileUpload } from '../components/FileUpload'
 import { extractPdfTextWithPages, chunkTextByPages, retrieveRelevantChunks } from '../utils/pdfText'
+import SEO from '../components/SEO'
 
 function AskPDF() {
   const navigate = useNavigate()
@@ -69,6 +70,14 @@ Answer: ${question}`
 
   return (
     <div className="app">
+      <SEO 
+        title="Ask Your PDF – Chat with PDF Online | Free AI PDF Chatbot"
+        description="Ask questions to PDF with an AI-powered, private, local chatbot. Free AI PDF chatbot for research and document Q&A in your browser."
+        keywords={[ 'Chat with PDF online','Ask questions to PDF (AI Q&A)','Free AI PDF chatbot','Smart PDF analysis tool' ]}
+        canonical={window.location.origin + '/ask'}
+        ogImage={window.location.origin + '/pdf-icon-512.png'}
+        jsonLd={{ '@context':'https://schema.org','@type':'WebPage','name':'Ask Your PDF','url':window.location.origin + '/ask' }}
+      />
       <ThemeSwitcher />
 
       <header className="app-header futuristic-card">
@@ -91,8 +100,8 @@ Answer: ${question}`
       <main className="app-main">
         <div className="container">
           <div className="welcome-section">
-            <h2 className="hero-title gradient-text">Ask your PDF</h2>
-            <p className="hero-description">Private and local: text is extracted and queried in your browser.</p>
+            <h2 className="hero-title gradient-text">Chat with PDF Online</h2>
+            <p className="hero-description">Free AI PDF chatbot: private and local. Ask anything about your PDF content.</p>
 
             <FileUpload onFilesAdded={onFilesAdded} />
 
