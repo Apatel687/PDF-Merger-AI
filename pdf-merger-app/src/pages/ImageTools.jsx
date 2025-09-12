@@ -14,6 +14,7 @@ function ImageTools() {
   const [imgQuality, setImgQuality] = useState(0.9)
   const [pdfImgFormat, setPdfImgFormat] = useState('image/png')
   const [pdfImgQuality, setPdfImgQuality] = useState(0.92)
+  const [pdfImgScale, setPdfImgScale] = useState(2)
   const hiddenImageInputRef = useRef(null)
   const hiddenPdfInputRef = useRef(null)
 
@@ -103,7 +104,7 @@ function ImageTools() {
       const pages = []
       for (let n = 1; n <= doc.numPages; n++) {
         const page = await doc.getPage(n)
-        const viewport = page.getViewport({ scale: 2 })
+        const viewport = page.getViewport({ scale: pdfImgScale })
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d')
         canvas.width = viewport.width
@@ -163,6 +164,11 @@ function ImageTools() {
                 <span className="muted">Quality</span>
                 <input type="range" min={0.5} max={1} step={0.05} value={imgQuality} onChange={(e) => setImgQuality(parseFloat(e.target.value))} />
               </div>
+              {images.length > 0 && (
+                <div className="muted" style={{ marginTop: 8 }}>
+                  <strong>Selected:</strong> {images.map(f => `${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`).slice(0,3).join(', ')}{images.length>3?` and ${images.length-3} more`:''}
+                </div>
+              )}
               <div className="features-actions" style={{ marginTop: 12 }}>
                 <button className="action-card futuristic-card" onClick={handleImagesToPdf} disabled={isBusy || images.length === 0}>
                   <div className="action-content"><div className="action-text"><h4>{isBusy ? 'Processing…' : 'Create PDF'}</h4><p>Compress and fit images into a PDF</p></div></div>
@@ -185,6 +191,10 @@ function ImageTools() {
                     <option value="image/webp">WEBP</option>
                   </select>
                 </label>
+                <label style={{ marginLeft: 8 }}>
+                  Scale
+                  <input type="range" min={1} max={3} step={0.25} value={pdfImgScale} onChange={(e) => setPdfImgScale(parseFloat(e.target.value))} />
+                </label>
                 {(pdfImgFormat === 'image/jpeg' || pdfImgFormat === 'image/webp') && (
                   <label style={{ marginLeft: 8 }}>
                     Quality
@@ -200,6 +210,18 @@ function ImageTools() {
                   </div>
                 ))}
               </div>
+              {pdfPages.length > 0 && (
+                <div className="features-actions" style={{ marginTop: 12 }}>
+                  <button className="download-btn futuristic-btn primary" onClick={() => {
+                    pdfPages.forEach(p => {
+                      const a = document.createElement('a')
+                      a.href = p.url
+                      a.download = `page-${p.index}.png`
+                      a.click()
+                    })
+                  }}>Download All</button>
+                </div>
+              )}
             </div>
 
             <div className="futuristic-card" style={{ padding: 16, marginTop: 16 }}>

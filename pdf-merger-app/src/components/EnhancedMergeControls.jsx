@@ -174,7 +174,7 @@ export function EnhancedMergeControls({
       const mergedPdfBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' })
       const mergedPdfUrl = URL.createObjectURL(mergedPdfBlob)
       
-      onMergeComplete(mergedPdfUrl)
+      onMergeComplete({ url: mergedPdfUrl, name: (outputName && outputName.trim()) || 'merged-document.pdf' })
     } catch (error) {
       console.error('Error merging PDFs:', error)
       alert('Failed to merge PDFs. Please try again.')

@@ -10,6 +10,9 @@ function OfficeTools() {
   const [status, setStatus] = useState('')
   const [pageSize, setPageSize] = useState('a4')
   const [orientation, setOrientation] = useState('portrait')
+  const [outNameDocx, setOutNameDocx] = useState('document.pdf')
+  const [outNamePptx, setOutNamePptx] = useState('slides.pdf')
+  const [outNameXlsx, setOutNameXlsx] = useState('table.pdf')
   const hiddenDocxRef = useState(null)
   const hiddenPptxRef = useState(null)
   const hiddenXlsxRef = useState(null)
@@ -22,7 +25,7 @@ function OfficeTools() {
     const doc = new jsPDF({ unit: 'pt', format: pageSize, orientation })
     const text = `DOCX file: ${f.name}`
     doc.text(text, 40, 60)
-    doc.save(f.name.replace(/\.docx$/i, '.pdf'))
+    doc.save(outNameDocx && outNameDocx.trim() ? outNameDocx : f.name.replace(/\.docx$/i, '.pdf'))
     setStatus('')
   }
 
@@ -32,7 +35,7 @@ function OfficeTools() {
     setStatus('Rendering PPTX to PDF (slides as placeholders)…')
     const doc = new jsPDF({ unit: 'pt', format: pageSize, orientation })
     doc.text(`PPTX file: ${f.name}`, 40, 60)
-    doc.save(f.name.replace(/\.pptx$/i, '.pdf'))
+    doc.save(outNamePptx && outNamePptx.trim() ? outNamePptx : f.name.replace(/\.pptx$/i, '.pdf'))
     setStatus('')
   }
 
@@ -43,7 +46,7 @@ function OfficeTools() {
     const doc = new jsPDF({ unit: 'pt', format: pageSize, orientation })
     const text = `Spreadsheet: ${f.name}`
     doc.text(text, 40, 60)
-    doc.save(f.name.replace(/\.(xlsx|csv)$/i, '.pdf'))
+    doc.save(outNameXlsx && outNameXlsx.trim() ? outNameXlsx : f.name.replace(/\.(xlsx|csv)$/i, '.pdf'))
     setStatus('')
   }
 
@@ -88,6 +91,7 @@ function OfficeTools() {
                 <input id="docx-input" type="file" accept=".docx" style={{ display:'none' }} onChange={(e) => docxToPdf(Array.from(e.target.files || []))} />
                 <label>Page size <select value={pageSize} onChange={(e) => setPageSize(e.target.value)}><option value="a4">A4</option><option value="letter">Letter</option></select></label>
                 <label>Orientation <select value={orientation} onChange={(e) => setOrientation(e.target.value)}><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
+                <label>Output name <input type="text" value={outNameDocx} onChange={(e)=>setOutNameDocx(e.target.value)} placeholder="document.pdf" style={{ width: 180 }} /></label>
               </div>
             </div>
 
@@ -99,6 +103,7 @@ function OfficeTools() {
                 <input id="pptx-input" type="file" accept=".pptx" style={{ display:'none' }} onChange={(e) => pptxToPdf(Array.from(e.target.files || []))} />
                 <label>Page size <select value={pageSize} onChange={(e) => setPageSize(e.target.value)}><option value="a4">A4</option><option value="letter">Letter</option></select></label>
                 <label>Orientation <select value={orientation} onChange={(e) => setOrientation(e.target.value)}><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
+                <label>Output name <input type="text" value={outNamePptx} onChange={(e)=>setOutNamePptx(e.target.value)} placeholder="slides.pdf" style={{ width: 180 }} /></label>
               </div>
             </div>
 
@@ -110,6 +115,7 @@ function OfficeTools() {
                 <input id="xlsx-input" type="file" accept=".xlsx,.csv" style={{ display:'none' }} onChange={(e) => xlsxToPdf(Array.from(e.target.files || []))} />
                 <label>Page size <select value={pageSize} onChange={(e) => setPageSize(e.target.value)}><option value="a4">A4</option><option value="letter">Letter</option></select></label>
                 <label>Orientation <select value={orientation} onChange={(e) => setOrientation(e.target.value)}><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
+                <label>Output name <input type="text" value={outNameXlsx} onChange={(e)=>setOutNameXlsx(e.target.value)} placeholder="table.pdf" style={{ width: 180 }} /></label>
               </div>
             </div>
 

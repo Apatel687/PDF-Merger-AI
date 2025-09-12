@@ -96,15 +96,16 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
     
     if (uploadStatus === 'validating') {
       return (
-        <div className="upload-status validating">
+        <div className="upload-status validating" role="status" aria-live="polite" aria-busy="true">
           <div className="spinner"></div>
           <span>Validating files...</span>
+          <progress className="upload-progress" aria-hidden="true"></progress>
         </div>
       )
     }
     
     return (
-      <div className={`upload-status ${uploadStatus.type}`}>
+      <div className={`upload-status ${uploadStatus.type}`} role="status" aria-live="polite">
         {uploadStatus.type === 'error' ? (
           <AlertCircle size={16} />
         ) : (
@@ -118,8 +119,8 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
   if (isCompact) {
     return (
       <div className="file-upload compact">
-        <div {...getRootProps()}>
-          <input {...getInputProps()} />
+        <div {...getRootProps({ role: 'button', tabIndex: 0, 'aria-label': 'Add PDF files' })}>
+          <input {...getInputProps()} aria-label="Choose PDF files" />
           <div className="compact-upload-area futuristic-card">
             <Upload size={20} />
             <span>Add more PDFs</span>
@@ -132,9 +133,9 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
 
   return (
     <div className="file-upload">
-      <div {...getRootProps()}>
-        <input {...getInputProps()} />
-        <div className={`upload-area futuristic-card ${isDragActive ? 'drag-active' : ''}`}>
+      <div {...getRootProps({ role: 'button', tabIndex: 0, 'aria-label': 'Upload PDFs via drag and drop or click' })}>
+        <input {...getInputProps()} aria-label="Upload PDF files" />
+        <div className={`upload-area futuristic-card ${isDragActive ? 'drag-active' : ''}`} aria-busy={uploadStatus==='validating'}>
           <div className="upload-icon">
             <FileText size={48} />
             <Upload size={24} className="upload-overlay" />
@@ -143,7 +144,7 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
             {isDragActive ? 'Drop your PDFs here' : 'Drag & Drop PDF Files'}
           </h3>
           <p className="upload-subtitle">or click to browse your files</p>
-          <button className="browse-btn futuristic-btn primary">
+          <button className="browse-btn futuristic-btn primary" type="button" aria-label="Browse files">
             <HardDrive size={16} />
             Browse Files
           </button>

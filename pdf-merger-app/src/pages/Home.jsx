@@ -16,7 +16,7 @@ function Home() {
   const navigate = useNavigate()
   const [pdfFiles, setPdfFiles] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const [mergedPdfUrl, setMergedPdfUrl] = useState(null)
+  const [mergedPdf, setMergedPdf] = useState(null)
   const [splitResults, setSplitResults] = useState([])
   const [fileRotations, setFileRotations] = useState({})
   const [deletedPages, setDeletedPages] = useState({})
@@ -373,13 +373,13 @@ function Home() {
                     files={pdfFiles}
                     isLoading={isLoading}
                     setIsLoading={setIsLoading}
-                    onMergeComplete={setMergedPdfUrl}
+                    onMergeComplete={setMergedPdf}
                     onSplitComplete={handleSplitComplete}
                     fileRotations={fileRotations}
                     deletedPages={deletedPages}
                   />
                   
-                  {mergedPdfUrl && (
+                  {mergedPdf && (
                     <div className="download-section futuristic-card">
                       <h3>Download Merged PDF</h3>
                       <div className="download-info">
@@ -398,8 +398,8 @@ function Home() {
                           View Page Index
                         </button>
                         <a 
-                          href={mergedPdfUrl} 
-                          download="merged-document.pdf"
+                          href={mergedPdf.url} 
+                          download={mergedPdf.name || 'merged-document.pdf'}
                           className="download-btn futuristic-btn primary"
                         >
                           <Download size={20} />
