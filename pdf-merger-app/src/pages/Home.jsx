@@ -7,7 +7,7 @@ import { PDFToolbar } from '../components/PDFToolbar'
 import { ShareModal } from '../components/ShareModal'
 import { PageIndexModal } from '../components/PageIndexModal'
 import ThemeSwitcher from '../components/ThemeSwitcher'
-import { FileText, Download, Trash2, Share2, Zap, Sparkles, Rocket, Shield, Bookmark, FileSearch } from 'lucide-react'
+import { FileText, Download, Trash2, Share2, Zap, Sparkles, Rocket, Shield, Bookmark, FileSearch, MessageSquare } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 
 function Home() {
@@ -122,6 +122,12 @@ function Home() {
           }
           tempInput.click()
         }
+        break
+      case 'summarize':
+        navigate('/summarize')
+        break
+      case 'ask':
+        navigate('/ask')
         break
       case 'share':
         setShowShareModal(true)
@@ -245,6 +251,33 @@ function Home() {
                     <span className="action-indicator">Click to start →</span>
                   </button>
                   
+                  <button 
+                    className="action-card futuristic-card"
+                    onClick={() => handleFeatureClick('summarize')}
+                  >
+                    <div className="action-content">
+                      <FileSearch size={32} />
+                      <div className="action-text">
+                        <h4>Summarize PDF</h4>
+                        <p>Generate a concise summary locally</p>
+                      </div>
+                    </div>
+                    <span className="action-indicator">Go to Summarizer →</span>
+                  </button>
+
+                  <button 
+                    className="action-card futuristic-card"
+                    onClick={() => handleFeatureClick('ask')}
+                  >
+                    <div className="action-content">
+                      <MessageSquare size={32} />
+                      <div className="action-text">
+                        <h4>Ask your PDF</h4>
+                        <p>Chat with your document content</p>
+                      </div>
+                    </div>
+                    <span className="action-indicator">Go to Q&A →</span>
+                  </button>
                   
                   <button 
                     className="action-card futuristic-card"
