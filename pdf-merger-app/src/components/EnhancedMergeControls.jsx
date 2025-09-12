@@ -18,6 +18,11 @@ export function EnhancedMergeControls({
     addBookmarks: true,
     addPageIndex: true // New option for adding page index
   })
+  const [outputName, setOutputName] = useState('merged-document.pdf')
+  const [progress, setProgress] = useState({ current: 0, total: 0, label: '' })
+  const [splitMode, setSplitMode] = useState('pages') // pages | ranges | every
+  const [splitRanges, setSplitRanges] = useState('1-3,5')
+  const [splitEvery, setSplitEvery] = useState(1)
 
   const handleMerge = async () => {
     if (files.length === 0) return
@@ -25,6 +30,7 @@ export function EnhancedMergeControls({
     setIsLoading(true)
     
     try {
+      setProgress({ current: 0, total: files.length, label: 'Preparing files…' })
       const mergedPdf = await PDFDocument.create()
       const outline = []
       const pageIndexMap = [] // Track which file each page came from
@@ -74,6 +80,7 @@ export function EnhancedMergeControls({
             newPage.setRotation(rotation)
           }
         }
+        setProgress(p => ({ ...p, current: p.current + 1, label: `Merging ${file.name}…` }))
       }
       
       // Add bookmarks/outline to the PDF if enabled
@@ -189,21 +196,54 @@ export function EnhancedMergeControls({
         const pdfDoc = await PDFDocument.load(fileArrayBuffer)
         const totalPages = pdfDoc.getPageCount()
         
-        // Split into individual pages
-        for (let i = 0; i < totalPages; i++) {
-          if (!deletedPages[file.id] || !deletedPages[file.id].includes(i)) {
+        const include = (i) => !deletedPages[file.id] || !deletedPages[file.id].includes(i)
+
+        if (splitMode === 'pages') {
+          for (let i = 0; i < totalPages; i++) {
+            if (include(i)) {
+              const newPdf = await PDFDocument.create()
+              const [copiedPage] = await newPdf.copyPages(pdfDoc, [i])
+              newPdf.addPage(copiedPage)
+              const newPdfBytes = await newPdf.save()
+              const newPdfBlob = new Blob([newPdfBytes], { type: 'application/pdf' })
+              const newPdfUrl = URL.createObjectURL(newPdfBlob)
+              splitResults.push({ name: `${file.name.replace('.pdf', '')}_page_${i + 1}.pdf`, url: newPdfUrl })
+            }
+          }
+        } else if (splitMode === 'ranges') {
+          const ranges = splitRanges.split(',').map(r => r.trim()).filter(Boolean)
+          let idx = 1
+          for (const r of ranges) {
+            const [startStr, endStr] = r.split('-')
+            const start = Math.max(1, parseInt(startStr, 10) || 1)
+            const end = Math.min(totalPages, parseInt(endStr ?? startStr, 10) || start)
             const newPdf = await PDFDocument.create()
-            const [copiedPage] = await newPdf.copyPages(pdfDoc, [i])
-            newPdf.addPage(copiedPage)
-            
+            for (let p = start - 1; p < end; p++) {
+              if (include(p)) {
+                const [copiedPage] = await newPdf.copyPages(pdfDoc, [p])
+                newPdf.addPage(copiedPage)
+              }
+            }
             const newPdfBytes = await newPdf.save()
             const newPdfBlob = new Blob([newPdfBytes], { type: 'application/pdf' })
             const newPdfUrl = URL.createObjectURL(newPdfBlob)
-            
-            splitResults.push({
-              name: `${file.name.replace('.pdf', '')}_page_${i + 1}.pdf`,
-              url: newPdfUrl
-            })
+            splitResults.push({ name: `${file.name.replace('.pdf', '')}_part_${idx++}.pdf`, url: newPdfUrl })
+          }
+        } else if (splitMode === 'every') {
+          const n = Math.max(1, parseInt(splitEvery, 10) || 1)
+          let part = 1
+          for (let i = 0; i < totalPages; i += n) {
+            const newPdf = await PDFDocument.create()
+            for (let p = i; p < Math.min(i + n, totalPages); p++) {
+              if (include(p)) {
+                const [copiedPage] = await newPdf.copyPages(pdfDoc, [p])
+                newPdf.addPage(copiedPage)
+              }
+            }
+            const newPdfBytes = await newPdf.save()
+            const newPdfBlob = new Blob([newPdfBytes], { type: 'application/pdf' })
+            const newPdfUrl = URL.createObjectURL(newPdfBlob)
+            splitResults.push({ name: `${file.name.replace('.pdf', '')}_part_${part++}.pdf`, url: newPdfUrl })
           }
         }
       }
@@ -235,6 +275,12 @@ export function EnhancedMergeControls({
       </div>
       
       <div className="merge-options futuristic-card">
+        <div className="option-item">
+          <label className="option-label">Output filename</label>
+          <input type="text" value={outputName} onChange={(e) => setOutputName(e.target.value)} placeholder="merged-document.pdf" />
+          <p className="option-description">Set the final filename before download</p>
+        </div>
+
         <div className="option-item">
           <label className="option-label">
             <input
@@ -291,6 +337,23 @@ export function EnhancedMergeControls({
           </div>
         </div>
       </div>
+      <div className="merge-options futuristic-card" style={{ marginTop: 12 }}>
+        <div className="option-item">
+          <label className="option-label">Split mode</label>
+          <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+            <label><input type="radio" name="splitmode" checked={splitMode==='pages'} onChange={() => setSplitMode('pages')} /> Each page</label>
+            <label><input type="radio" name="splitmode" checked={splitMode==='ranges'} onChange={() => setSplitMode('ranges')} /> Ranges</label>
+            <label><input type="radio" name="splitmode" checked={splitMode==='every'} onChange={() => setSplitMode('every')} /> Every N pages</label>
+            {splitMode==='ranges' && (
+              <input type="text" value={splitRanges} onChange={(e)=>setSplitRanges(e.target.value)} placeholder="e.g. 1-3,5,8-10" />
+            )}
+            {splitMode==='every' && (
+              <input type="number" min={1} value={splitEvery} onChange={(e)=>setSplitEvery(e.target.value)} style={{ width: 80 }} />
+            )}
+          </div>
+          <p className="option-description">Choose how to split the PDF into parts</p>
+        </div>
+      </div>
       
       <div className="action-buttons">
         <button
@@ -337,6 +400,10 @@ export function EnhancedMergeControls({
             <Zap size={24} className="processing-icon" />
           </div>
           <p>AI processing your documents...</p>
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:8 }}>
+            <progress max={progress.total || 1} value={progress.current} style={{ width:'100%' }}></progress>
+            <span className="muted" style={{ minWidth: 140 }}>{progress.label}</span>
+          </div>
         </div>
       )}
     </div>
