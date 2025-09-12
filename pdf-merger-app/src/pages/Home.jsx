@@ -170,7 +170,7 @@ function Home() {
               <span className="stat-value">{shareStats.shares}</span>
               <span className="stat-label">Shares</span>
             </div>
-            <button className="futuristic-btn" onClick={() => navigate(-1)} style={{ marginLeft: 12 }}>← Back</button>
+            {/* Share quick action in header via mini toolbar below */}
           </div>
         </div>
       </header>
