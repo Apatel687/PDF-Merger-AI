@@ -263,61 +263,42 @@ function Home() {
               
               <div className="features-showcase">
                 <h3>Powerful PDF Tools</h3>
-                <div className="features-actions">
-                  <button 
-                    className="action-card futuristic-card"
-                    onClick={() => handleFeatureClick('merge')}
-                  >
-                    <div className="action-content">
-                      <FileText size={32} />
-                      <div className="action-text">
-                        <h4>Merge PDF Free Online</h4>
-                        <p>Combine multiple PDF files into one document securely</p>
-                      </div>
-                    </div>
-                    <span className="action-indicator">Click to start →</span>
+                <div className="tool-grid">
+                  <button className="tool-button" onClick={() => handleFeatureClick('merge')}>
+                    <FileText size={18} /> Merge PDF
                   </button>
-                  
-                  <button 
-                    className="action-card futuristic-card"
-                    onClick={() => handleFeatureClick('summarize')}
-                  >
-                    <div className="action-content">
-                      <FileSearch size={32} />
-                      <div className="action-text">
-                        <h4>AI PDF Summarizer</h4>
-                        <p>AI document summarizer free. Summarize long documents</p>
-                      </div>
-                    </div>
-                    <span className="action-indicator">Go to Summarizer →</span>
+                  <button className="tool-button" onClick={() => navigate('/annotate')}>
+                    <Bookmark size={18} /> Add Page Numbers
                   </button>
-
-                  <button 
-                    className="action-card futuristic-card"
-                    onClick={() => handleFeatureClick('ask')}
-                  >
-                    <div className="action-content">
-                      <MessageSquare size={32} />
-                      <div className="action-text">
-                        <h4>Chat with PDF Online</h4>
-                        <p>Free AI PDF chatbot for intelligent document Q&A</p>
-                      </div>
-                    </div>
-                    <span className="action-indicator">Go to Q&A →</span>
+                  <button className="tool-button" onClick={() => navigate('/annotate')}>
+                    <Shield size={18} /> Add Watermark
                   </button>
-                  
-                  <button 
-                    className="action-card futuristic-card"
-                    onClick={() => handleFeatureClick('share')}
-                  >
-                    <div className="action-content">
-                      <Share2 size={32} />
-                      <div className="action-text">
-                        <h4>Free PWA PDF Tools</h4>
-                        <p>Browser-based PDF tool with offline support and no watermark</p>
-                      </div>
-                    </div>
-                    <span className="action-indicator">Click to share →</span>
+                  <button className="tool-button" onClick={() => handleFeatureClick('summarize')}>
+                    <FileSearch size={18} /> Summarize PDF (AI)
+                  </button>
+                  <button className="tool-button" onClick={() => handleFeatureClick('ask')}>
+                    <MessageSquare size={18} /> Ask your PDF (AI)
+                  </button>
+                  <button className="tool-button" onClick={() => navigate('/images')}>
+                    <FileText size={18} /> JPG → PDF
+                  </button>
+                  <button className="tool-button" onClick={() => navigate('/images')}>
+                    <FileText size={18} /> PNG → PDF
+                  </button>
+                  <button className="tool-button" onClick={() => navigate('/images')}>
+                    <FileText size={18} /> PDF → Images
+                  </button>
+                  <button className="tool-button" onClick={() => navigate('/office')}>
+                    <FileText size={18} /> Word → PDF
+                  </button>
+                  <button className="tool-button" onClick={() => navigate('/office')}>
+                    <FileText size={18} /> Excel → PDF
+                  </button>
+                  <button className="tool-button" onClick={() => navigate('/office')}>
+                    <FileText size={18} /> PPT → PDF
+                  </button>
+                  <button className="tool-button" onClick={() => setShowShareModal(true)}>
+                    <Share2 size={18} /> Share
                   </button>
                 </div>
               </div>
