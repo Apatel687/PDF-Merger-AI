@@ -62,6 +62,9 @@ function Summarize() {
               <p className="subtitle">Next-Gen PDF Processing powered by AI</p>
             </div>
           </div>
+          <div>
+            <button className="futuristic-btn" onClick={() => navigate(-1)}>← Back</button>
+          </div>
         </div>
       </header>
 

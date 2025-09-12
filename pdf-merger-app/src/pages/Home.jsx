@@ -170,12 +170,19 @@ function Home() {
               <span className="stat-value">{shareStats.shares}</span>
               <span className="stat-label">Shares</span>
             </div>
+            <button className="futuristic-btn" onClick={() => navigate(-1)} style={{ marginLeft: 12 }}>← Back</button>
           </div>
         </div>
       </header>
 
       <main className="app-main">
         <div className="container">
+          <div className="features-actions" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
+            <button className="futuristic-btn" onClick={() => handleFeatureClick('merge')}>Merge PDFs</button>
+            <button className="futuristic-btn" onClick={() => handleFeatureClick('summarize')}>Summarize PDF</button>
+            <button className="futuristic-btn" onClick={() => handleFeatureClick('ask')}>Ask your PDF</button>
+            <button className="futuristic-btn" onClick={() => handleFeatureClick('share')}>Share</button>
+          </div>
           {pdfFiles.length === 0 ? (
             <div className="welcome-section">
               <div className="hero-section">

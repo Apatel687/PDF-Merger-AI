@@ -49,29 +49,47 @@ export function ShareModal({ isOpen, onClose, pdfUrl, fileName }) {
     }
   }
 
-  const handleEmailShare = () => {
+  const doWebShare = async () => {
+    try {
+      const referralUrl = getReferralUrl()
+      if (navigator.share) {
+        await navigator.share({ title: 'PDF Merger AI', text: 'Merge, Summarize, and Ask your PDFs privately in your browser.', url: referralUrl })
+        return true
+      }
+      return false
+    } catch (e) {
+      return false
+    }
+  }
+
+  const handleEmailShare = async () => {
     const referralUrl = getReferralUrl()
+    if (await doWebShare()) return
     window.open(`mailto:?subject=Check out this free PDF merger tool&body=I wanted to share this amazing PDF merger tool with you: ${encodeURIComponent(referralUrl)}`)
   }
 
-  const handleWhatsAppShare = () => {
+  const handleWhatsAppShare = async () => {
     const referralUrl = getReferralUrl()
+    if (await doWebShare()) return
     window.open(`https://wa.me/?text=${encodeURIComponent(`Check out this free PDF merger tool! ${referralUrl}`)}`)
   }
 
-  const handleFacebookShare = () => {
+  const handleFacebookShare = async () => {
     const referralUrl = getReferralUrl()
+    if (await doWebShare()) return
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralUrl)}`)
   }
 
-  const handleTwitterShare = () => {
+  const handleTwitterShare = async () => {
     const referralUrl = getReferralUrl()
     const text = `Check out this free PDF merger tool! ${referralUrl}`
+    if (await doWebShare()) return
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`)
   }
 
-  const handleLinkedInShare = () => {
+  const handleLinkedInShare = async () => {
     const referralUrl = getReferralUrl()
+    if (await doWebShare()) return
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralUrl)}`)
   }
 
