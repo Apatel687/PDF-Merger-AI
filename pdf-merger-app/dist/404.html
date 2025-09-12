@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - PDF Merger AI</title>
+    <meta name="description" content="Page not found. Return to our PDF merging tool to merge, split, and edit PDF files.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://your-domain.com/404" />
+    <meta property="og:title" content="Page Not Found - PDF Merger AI" />
+    <meta property="og:description" content="Page not found. Return to our PDF merging tool to merge, split, and edit PDF files." />
+    <meta property="og:image" content="https://your-domain.com/pdf-icon-512.png" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://your-domain.com/404" />
+    <meta property="twitter:title" content="Page Not Found - PDF Merger AI" />
+    <meta property="twitter:description" content="Page not found. Return to our PDF merging tool to merge, split, and edit PDF files." />
+    <meta property="twitter:image" content="https://your-domain.com/pdf-icon-512.png" />
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #3b82f6;
+        }
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            color: #64748b;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .logo-ai {
+            color: #8b5cf6;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-text">PDF Merger<span class="logo-ai">AI</span></div>
+        </div>
+        <h1>Page Not Found</h1>
+        <p>It looks like you've followed a broken link or entered a URL that doesn't exist on this site.</p>
+        <p>This might be due to a configuration issue with the application deployment.</p>
+        <a href="/" class="btn">Go to Homepage</a>
+        <a href="/merge" class="btn">Go to PDF Merger</a>
+    </div>
+    
+    <script>
+        // Help with SEO by sending a signal that this is a 404 page
+        if (window.history && window.history.pushState) {
+            window.history.pushState(null, null, '/404');
+        }
+    </script>
+</body>
+</html>

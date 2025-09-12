@@ -1,0 +1,11 @@
+# Static files first
+/sitemap.xml   /sitemap.xml   200!
+/robots.txt    /robots.txt    200!
+
+# Important static pages
+/about     /about.html   200!
+/privacy   /privacy.html 200!
+/terms     /terms.html   200!
+
+# SPA fallback
+/*             /index.html    200
