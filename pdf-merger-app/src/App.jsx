@@ -8,6 +8,9 @@ import OfficeTools from './pages/OfficeTools'
 import AnnotateTools from './pages/AnnotateTools'
 import FAQ from './pages/FAQ'
 import Blog from './pages/Blog'
+import About from './pages/About'
+import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
 import './App.css'
 
 function App() {
@@ -23,6 +26,9 @@ function App() {
         <Route path="/annotate" element={<AnnotateTools />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/blog" element={<Blog />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
       </Routes>
     </Router>
   )
