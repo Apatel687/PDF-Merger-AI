@@ -73,10 +73,28 @@ Answer: ${question}`
       <SEO 
         title="Ask Your PDF – Chat with PDF Online | Free AI PDF Chatbot"
         description="Ask questions to PDF with an AI-powered, private, local chatbot. Free AI PDF chatbot for research and document Q&A in your browser."
-        keywords={[ 'Chat with PDF online','Ask questions to PDF (AI Q&A)','Free AI PDF chatbot','Smart PDF analysis tool' ]}
-        canonical={window.location.origin + '/ask'}
-        ogImage={window.location.origin + '/pdf-icon-512.png'}
-        jsonLd={{ '@context':'https://schema.org','@type':'WebPage','name':'Ask Your PDF','url':window.location.origin + '/ask' }}
+        keywords={[ 'Chat with PDF online','Ask questions to PDF (AI Q&A)','Free AI PDF chatbot','Smart PDF analysis tool','PDF Q&A assistant','AI document chat' ]}
+        canonical="https://pdf-merger-app.netlify.app/ask"
+        ogImage="https://pdf-merger-app.netlify.app/pdf-icon-512.png"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          'name': 'AI PDF Chat Assistant',
+          'applicationCategory': 'Productivity',
+          'operatingSystem': 'Web Browser',
+          'softwareVersion': '1.0',
+          'creator': {
+            '@type': 'Organization',
+            'name': 'PDF Merger AI'
+          },
+          'offers': {
+            '@type': 'Offer',
+            'price': '0',
+            'priceCurrency': 'USD'
+          },
+          'description': 'Free AI-powered PDF chatbot for document Q&A. Chat with your PDFs locally and privately.',
+          'url': 'https://pdf-merger-app.netlify.app/ask'
+        }}
       />
       <ThemeSwitcher />
 

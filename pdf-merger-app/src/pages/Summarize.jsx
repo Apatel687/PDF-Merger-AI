@@ -53,10 +53,28 @@ function Summarize() {
       <SEO 
         title="AI PDF Summarizer Free – Summarize PDF Online (Local, Private)"
         description="Summarize long documents with AI locally in your browser. Free AI document summarizer for PDFs. Privacy-first: no uploads."
-        keywords={[ 'AI PDF summarizer free','Summarize long documents AI tool','Document intelligence AI tool','Local AI PDF tool (privacy-first)' ]}
-        canonical={window.location.origin + '/summarize'}
-        ogImage={window.location.origin + '/pdf-icon-512.png'}
-        jsonLd={{ '@context':'https://schema.org','@type':'WebPage','name':'AI PDF Summarizer','url':window.location.origin + '/summarize' }}
+        keywords={[ 'AI PDF summarizer free','Summarize long documents AI tool','Document intelligence AI tool','Local AI PDF tool (privacy-first)','PDF text summarizer','AI document analysis' ]}
+        canonical="https://pdf-merger-app.netlify.app/summarize"
+        ogImage="https://pdf-merger-app.netlify.app/pdf-icon-512.png"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          'name': 'AI PDF Summarizer',
+          'applicationCategory': 'Productivity',
+          'operatingSystem': 'Web Browser',
+          'softwareVersion': '1.0',
+          'creator': {
+            '@type': 'Organization',
+            'name': 'PDF Merger AI'
+          },
+          'offers': {
+            '@type': 'Offer',
+            'price': '0',
+            'priceCurrency': 'USD'
+          },
+          'description': 'Free AI-powered PDF summarizer that works locally in your browser for privacy and security.',
+          'url': 'https://pdf-merger-app.netlify.app/summarize'
+        }}
       />
       <ThemeSwitcher />
 

@@ -23,6 +23,7 @@ function Home() {
   const [shareStats, setShareStats] = useState({ shares: 0, lastShared: null })
   const [showShareModal, setShowShareModal] = useState(false)
   const [showPageIndexModal, setShowPageIndexModal] = useState(false)
+  const [mergedPdfUrl, setMergedPdfUrl] = useState(null)
 
   const handleFilesAdded = (newFiles) => {
     const filesWithId = newFiles.map((file, index) => ({
@@ -148,17 +149,36 @@ function Home() {
           'Convert PDF to Word free','Convert Word to PDF online','Convert Excel to PDF free','Convert PowerPoint to PDF free',
           'AI PDF summarizer free','Chat with PDF online','Privacy-first PDF editor','Local PDF tools (no server upload)'
         ]}
-        canonical={window.location.origin + '/'}
-        ogImage={window.location.origin + '/pdf-icon-512.png'}
+        canonical="https://pdf-merger-app.netlify.app/"
+        ogImage="https://pdf-merger-app.netlify.app/pdf-icon-512.png"
         jsonLd={{
-          '@context':'https://schema.org',
-          '@type':'WebApplication',
-          'name':'PDF Merger AI',
-          'url':window.location.origin + '/',
-          'applicationCategory':'Utility',
-          'operatingSystem':'Web',
-          'offers':{ '@type':'Offer', price:'0', priceCurrency:'USD' },
-          'featureList':[ 'Merge PDF','Split PDF','Compress PDF','PDF to Word','Word to PDF','Excel to PDF','PPT to PDF','Images to PDF','PDF to images','AI PDF summarizer','Ask PDF','Annotate','Add Watermark','Add Page Numbers' ]
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          'name': 'PDF Merger AI',
+          'applicationCategory': 'Productivity',
+          'operatingSystem': 'Web Browser',
+          'browserRequirements': 'Requires JavaScript. Requires HTML5.',
+          'softwareVersion': '1.0',
+          'creator': {
+            '@type': 'Organization',
+            'name': 'PDF Merger AI'
+          },
+          'offers': {
+            '@type': 'Offer',
+            'price': '0',
+            'priceCurrency': 'USD'
+          },
+          'url': 'https://pdf-merger-app.netlify.app/',
+          'description': 'Advanced AI-powered PDF tools: merge, split, compress, convert, summarize, and chat with PDFs. 100% local processing for privacy.',
+          'featureList': [
+            'PDF Merging and Splitting',
+            'AI PDF Summarization',
+            'Interactive PDF Chat',
+            'Office Document Conversion',
+            'Image to PDF Conversion',
+            'PDF Annotation Tools',
+            'Local Processing for Privacy'
+          ]
         }}
       />
       <ThemeSwitcher />

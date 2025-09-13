@@ -125,10 +125,28 @@ function ImageTools() {
       <SEO 
         title="Convert JPG/PNG ⇆ PDF Online Free | PDF to Images Extractor"
         description="Convert JPG to PDF online free, convert PNG to PDF instantly, and extract images from PDF free. Compress images for PDF locally."
-        keywords={[ 'Convert JPG to PDF online free','Convert PNG to PDF instantly','Convert PDF to image extractor','Compress images for PDF free' ]}
-        canonical={window.location.origin + '/images'}
-        ogImage={window.location.origin + '/pdf-icon-512.png'}
-        jsonLd={{ '@context':'https://schema.org','@type':'WebPage','name':'Image ⇆ PDF Tools','url':window.location.origin + '/images' }}
+        keywords={[ 'Convert JPG to PDF online free','Convert PNG to PDF instantly','Convert PDF to image extractor','Compress images for PDF free','Image to PDF converter','PDF to JPG converter' ]}
+        canonical="https://pdf-merger-app.netlify.app/images"
+        ogImage="https://pdf-merger-app.netlify.app/pdf-icon-512.png"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          'name': 'Image PDF Converter',
+          'applicationCategory': 'Productivity',
+          'operatingSystem': 'Web Browser',
+          'softwareVersion': '1.0',
+          'creator': {
+            '@type': 'Organization',
+            'name': 'PDF Merger AI'
+          },
+          'offers': {
+            '@type': 'Offer',
+            'price': '0',
+            'priceCurrency': 'USD'
+          },
+          'description': 'Convert images to PDF and extract images from PDF files locally and securely.',
+          'url': 'https://pdf-merger-app.netlify.app/images'
+        }}
       />
       <ThemeSwitcher />
 
