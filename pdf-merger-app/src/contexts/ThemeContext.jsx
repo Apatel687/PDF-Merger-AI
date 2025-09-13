@@ -5,7 +5,7 @@ const ThemeContext = createContext()
 export function ThemeProvider({ children }) {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode')
-    return saved ? JSON.parse(saved) : window.matchMedia('(prefers-color-scheme: dark)').matches
+    return saved ? JSON.parse(saved) : false // Default to light mode
   })
   
   const [accentColor, setAccentColor] = useState(() => {
