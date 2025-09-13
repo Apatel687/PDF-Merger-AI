@@ -6,6 +6,7 @@
 /about     /about.html   200!
 /privacy   /privacy.html 200!
 /terms     /terms.html   200!
+/summarize /summarize.html 200!
 
 # SPA fallback
 /*             /index.html    200
