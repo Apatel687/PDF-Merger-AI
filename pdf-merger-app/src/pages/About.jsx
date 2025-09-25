@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import SEO from '../components/SEO'
 import { FileText, Zap, Shield, Users, Award, Globe } from 'lucide-react'
+import './About.css'
 
 function About() {
   const navigate = useNavigate()
@@ -53,29 +54,59 @@ function About() {
             <h2 className="hero-title gradient-text">About PDF Merger AI</h2>
             <p className="hero-description">Advanced PDF tools with AI capabilities, designed for privacy and performance.</p>
 
-            <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', margin: '30px 0' }}>
-              <div className="feature-card futuristic-card">
-                <div className="feature-icon" style={{ fontSize: '2.5em', marginBottom: '15px', textAlign: 'center' }}>
-                  <Shield size={40} style={{ color: '#10b981' }} />
+            <div className="features-grid" style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(3, 1fr)', 
+              gap: '24px', 
+              margin: '40px 0',
+              '@media (max-width: 768px)': {
+                gridTemplateColumns: '1fr',
+                gap: '20px'
+              }
+            }}>
+              <div className="feature-card futuristic-card" style={{
+                padding: '30px 20px',
+                textAlign: 'center',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}>
+                <div className="feature-icon" style={{ marginBottom: '20px' }}>
+                  <Shield size={48} style={{ color: '#10b981' }} />
                 </div>
-                <h3>Privacy First</h3>
-                <p>All processing happens locally in your browser. Your documents never leave your device, ensuring complete privacy and security.</p>
+                <h3 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>Privacy First</h3>
+                <p style={{ lineHeight: '1.6', flex: 1 }}>All processing happens locally in your browser. Your documents never leave your device, ensuring complete privacy and security.</p>
               </div>
 
-              <div className="feature-card futuristic-card">
-                <div className="feature-icon" style={{ fontSize: '2.5em', marginBottom: '15px', textAlign: 'center' }}>
-                  <Zap size={40} style={{ color: '#3b82f6' }} />
+              <div className="feature-card futuristic-card" style={{
+                padding: '30px 20px',
+                textAlign: 'center',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}>
+                <div className="feature-icon" style={{ marginBottom: '20px' }}>
+                  <Zap size={48} style={{ color: '#3b82f6' }} />
                 </div>
-                <h3>AI-Powered</h3>
-                <p>Advanced AI features including PDF summarization and document Q&A, all running locally for enhanced privacy.</p>
+                <h3 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>AI-Powered</h3>
+                <p style={{ lineHeight: '1.6', flex: 1 }}>Advanced AI features including PDF summarization and document Q&A, all running locally for enhanced privacy.</p>
               </div>
 
-              <div className="feature-card futuristic-card">
-                <div className="feature-icon" style={{ fontSize: '2.5em', marginBottom: '15px', textAlign: 'center' }}>
-                  <FileText size={40} style={{ color: '#8b5cf6' }} />
+              <div className="feature-card futuristic-card" style={{
+                padding: '30px 20px',
+                textAlign: 'center',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}>
+                <div className="feature-icon" style={{ marginBottom: '20px' }}>
+                  <FileText size={48} style={{ color: '#8b5cf6' }} />
                 </div>
-                <h3>Complete Toolkit</h3>
-                <p>Merge, split, compress, convert, annotate, and chat with PDFs. Everything you need for professional document processing.</p>
+                <h3 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>Complete Toolkit</h3>
+                <p style={{ lineHeight: '1.6', flex: 1 }}>Merge, split, compress, convert, annotate, and chat with PDFs. Everything you need for professional document processing.</p>
               </div>
             </div>
 
