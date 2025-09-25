@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#3b82f6" />
     
     <!-- SEO Meta Tags -->
@@ -89,31 +89,42 @@
     <meta name="msapplication-TileImage" content="/pdf-icon-192.png">
     <meta name="msapplication-TileColor" content="#3b82f6">
     
-    <!-- PDF.js setup with fallback -->
+    <!-- PDF.js setup with Chrome compatibility -->
     <script>
-      // Load PDF.js with fallback
+      // Chrome-compatible PDF.js loader
       (function() {
+        // Check if running in Chrome
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
+        
         const script = document.createElement('script')
-        script.src = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js'
+        script.crossOrigin = 'anonymous'
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
+        
         script.onload = function() {
           if (window.pdfjsLib) {
-            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
-            console.log('PDF.js loaded successfully')
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+            // Chrome-specific configuration
+            if (isChrome) {
+              window.pdfjsLib.GlobalWorkerOptions.disableWorker = false
+            }
+            console.log('PDF.js loaded successfully for', isChrome ? 'Chrome' : 'other browser')
           }
         }
+        
         script.onerror = function() {
-          console.error('Failed to load PDF.js from CDN')
-          // Try alternative CDN
+          console.error('Failed to load PDF.js, trying local fallback')
+          // Use local PDF.js as fallback
           const fallbackScript = document.createElement('script')
-          fallbackScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
+          fallbackScript.src = '/pdf.min.js'
           fallbackScript.onload = function() {
             if (window.pdfjsLib) {
-              window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
-              console.log('PDF.js loaded from fallback CDN')
+              window.pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+              console.log('PDF.js loaded from local files')
             }
           }
           document.head.appendChild(fallbackScript)
         }
+        
         document.head.appendChild(script)
       })()
     </script>
@@ -236,17 +247,25 @@
       });
     </script>
     
-    <!-- Service Worker Registration - DISABLED FOR DEVELOPMENT -->
+    <!-- Service Worker Registration - Chrome Compatible -->
     <script>
-      // Service worker disabled for localhost development
+      // Chrome-compatible service worker registration
       if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
-        navigator.serviceWorker.register('/sw.js')
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js', {
+            scope: '/'
+          })
           .then(registration => {
             console.log('SW registered: ', registration);
+            // Update on reload for Chrome
+            if (registration.waiting) {
+              registration.waiting.postMessage({type: 'SKIP_WAITING'});
+            }
           })
           .catch(registrationError => {
             console.log('SW registration failed: ', registrationError);
           });
+        });
       }
     </script>
   </body>

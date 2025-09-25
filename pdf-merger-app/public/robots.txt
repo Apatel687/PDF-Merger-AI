@@ -1,4 +1,24 @@
 User-agent: *
 Allow: /
 
+# High-priority pages for crawling
+Allow: /summarize
+Allow: /ask
+Allow: /annotate
+Allow: /images
+Allow: /office
+Allow: /about
+Allow: /faq
+Allow: /blog
+
+# Sitemap location
 Sitemap: https://pdf-merger-app.netlify.app/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
+
+# Block unnecessary paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+Disallow: /.well-known/
