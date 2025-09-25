@@ -1,0 +1,8 @@
+# Force cache refresh for sitemap
+/sitemap.xml /sitemap.xml 200!
+
+# Cache busting for new pages
+/how-to-* /how-to-:splat 200!
+
+# Ensure proper headers
+/* /index.html 200

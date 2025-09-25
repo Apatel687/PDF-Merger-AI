@@ -213,6 +213,7 @@ function HowToChatWithPDF() {
                   </div>
                 </div>
               </div>
+            </div>
 
             <div className="about-content futuristic-card" style={{ padding: '30px', margin: '30px 0' }}>
               <h3>Pro Tips for Better Chat Results</h3>
