@@ -318,6 +318,16 @@ function AnnotateTools() {
           <div className="welcome-section">
             <h2 className="hero-title gradient-text">Annotation Tools</h2>
             <p className="hero-description">Add page numbers and watermarks client‑side. Highlight/notes roadmap.</p>
+            
+            <div style={{ textAlign: 'center', margin: '20px 0' }}>
+              <button 
+                className="futuristic-btn" 
+                onClick={() => navigate('/how-to-add-watermark')}
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', color: 'white' }}
+              >
+                🛡️ How to Add Watermarks & Page Numbers
+              </button>
+            </div>
 
             <div className="futuristic-card" style={{ padding: 16 }}>
               <h3>Upload PDF</h3>

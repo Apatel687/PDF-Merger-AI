@@ -156,6 +156,16 @@ function OfficeTools() {
           <div className="welcome-section">
             <h2 className="hero-title gradient-text">Office Tools</h2>
             <p className="hero-description">Convert Office files ⇆ PDF. Client-side only. No uploads.</p>
+            
+            <div style={{ textAlign: 'center', margin: '20px 0' }}>
+              <button 
+                className="futuristic-btn" 
+                onClick={() => navigate('/how-to-convert-office')}
+                style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: 'white' }}
+              >
+                📄 How to Convert Office Documents
+              </button>
+            </div>
 
             <div className="futuristic-card" style={{ padding: 16, marginBottom: 16 }}>
               <h3>DOCX → PDF</h3>

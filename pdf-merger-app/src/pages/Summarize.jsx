@@ -137,6 +137,16 @@ function Summarize() {
           <div className="welcome-section">
             <h2 className="hero-title gradient-text">{t('summarize')} PDF</h2>
             <p className="hero-description">{t('summarizeDescription') || 'Generate a concise summary of your PDF using AI'}</p>
+            
+            <div style={{ textAlign: 'center', margin: '20px 0' }}>
+              <button 
+                className="futuristic-btn" 
+                onClick={() => navigate('/how-to-summarize-pdf')}
+                style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: 'white' }}
+              >
+                📖 How to Use AI PDF Summarizer
+              </button>
+            </div>
 
             <FileUpload onFilesAdded={onFilesAdded} />
 

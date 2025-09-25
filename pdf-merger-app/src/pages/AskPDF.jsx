@@ -120,6 +120,16 @@ Answer: ${question}`
           <div className="welcome-section">
             <h2 className="hero-title gradient-text">Chat with PDF Online</h2>
             <p className="hero-description">Free AI PDF chatbot: private and local. Ask anything about your PDF content.</p>
+            
+            <div style={{ textAlign: 'center', margin: '20px 0' }}>
+              <button 
+                className="futuristic-btn" 
+                onClick={() => navigate('/how-to-chat-with-pdf')}
+                style={{ background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white' }}
+              >
+                💬 How to Chat with PDF
+              </button>
+            </div>
 
             <FileUpload onFilesAdded={onFilesAdded} />
 

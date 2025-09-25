@@ -183,6 +183,16 @@ function ImageTools() {
           <div className="welcome-section">
             <h2 className="hero-title gradient-text">Image Tools</h2>
             <p className="hero-description">Convert JPG/PNG ⇆ PDF with local compression. Extract PDF pages as images.</p>
+            
+            <div style={{ textAlign: 'center', margin: '20px 0' }}>
+              <button 
+                className="futuristic-btn" 
+                onClick={() => navigate('/how-to-convert-images')}
+                style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: 'white' }}
+              >
+                🖼️ How to Convert Images & PDFs
+              </button>
+            </div>
 
             <div className="futuristic-card" style={{ padding: 16, marginBottom: 16 }}>
               <h3>Images → PDF</h3>

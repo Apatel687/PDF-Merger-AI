@@ -1,0 +1,11 @@
+# ads.txt file for PDF Merger AI
+# This file is required for Google AdSense and other ad networks
+
+# Google AdSense
+google.com, pub-YOUR_ADSENSE_ID, DIRECT, f08c47fec0942fa0
+
+# Microsoft Advertising (Bing Ads)
+bing.com, YOUR_MICROSOFT_CUSTOMER_ID, DIRECT
+
+# Add other ad networks here as needed
+# Format: domain, publisher_id, relationship, certification_authority_id

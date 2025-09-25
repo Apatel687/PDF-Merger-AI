@@ -334,6 +334,18 @@ function Home() {
           </div>
           {pdfFiles.length === 0 ? (
             <div className="welcome-section">
+              {/* Top Banner Ad */}
+              <div className="ad-banner-top" style={{ textAlign: 'center', margin: '20px 0' }}>
+                <ins
+                  className="adsbygoogle"
+                  style={{ display: 'block' }}
+                  data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+                  data-ad-slot="YOUR_TOP_BANNER_SLOT"
+                  data-ad-format="auto"
+                  data-full-width-responsive="true"
+                />
+              </div>
+              
               <div className="hero-section">
                 <div className="hero-content">
                   <h2 className="hero-title gradient-text">{t('heroTitle')}</h2>
@@ -384,6 +396,18 @@ function Home() {
               </div>
               
               <FileUpload onFilesAdded={handleFilesAdded} />
+              
+              {/* Middle Content Ad */}
+              <div className="ad-content-middle" style={{ textAlign: 'center', margin: '30px 0' }}>
+                <ins
+                  className="adsbygoogle"
+                  style={{ display: 'block' }}
+                  data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+                  data-ad-slot="YOUR_CONTENT_SLOT"
+                  data-ad-format="rectangle"
+                  data-full-width-responsive="true"
+                />
+              </div>
               
               <div className="features-showcase">
                 <h3>{t('powerfullPdfTools')}</h3>
