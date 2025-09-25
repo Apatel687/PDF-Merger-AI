@@ -58,34 +58,53 @@ export function preventZoom(element) {
 }
 
 // Utility function for better touch handling
-export function handleTouch(onTap, onLongPress, delay = 500) {
+export function handleTouch(element, options = {}) {
+  const { onTap, onLongPress, delay = 500 } = options
   let touchStart = 0
   let touchTimer = null
   
-  return {
-    onTouchStart: (e) => {
-      touchStart = Date.now()
+  if (!element || typeof element.addEventListener !== 'function') {
+    return { cleanup: () => {} }
+  }
+  
+  const handleTouchStart = (e) => {
+    touchStart = Date.now()
+    if (onLongPress) {
       touchTimer = setTimeout(() => {
-        if (onLongPress) onLongPress(e)
+        element.dispatchEvent(new CustomEvent('longpress', { detail: { originalEvent: e } }))
       }, delay)
-    },
-    onTouchEnd: (e) => {
-      const touchDuration = Date.now() - touchStart
-      
-      if (touchTimer) {
-        clearTimeout(touchTimer)
-        touchTimer = null
-      }
-      
-      if (touchDuration < delay && onTap) {
-        onTap(e)
-      }
-    },
-    onTouchCancel: () => {
-      if (touchTimer) {
-        clearTimeout(touchTimer)
-        touchTimer = null
-      }
+    }
+  }
+  
+  const handleTouchEnd = (e) => {
+    const touchDuration = Date.now() - touchStart
+    
+    if (touchTimer) {
+      clearTimeout(touchTimer)
+      touchTimer = null
+    }
+    
+    if (touchDuration < delay && onTap) {
+      element.dispatchEvent(new CustomEvent('tap', { detail: { originalEvent: e } }))
+    }
+  }
+  
+  const handleTouchCancel = () => {
+    if (touchTimer) {
+      clearTimeout(touchTimer)
+      touchTimer = null
+    }
+  }
+  
+  element.addEventListener('touchstart', handleTouchStart, { passive: false })
+  element.addEventListener('touchend', handleTouchEnd, { passive: false })
+  element.addEventListener('touchcancel', handleTouchCancel, { passive: false })
+  
+  return {
+    cleanup: () => {
+      element.removeEventListener('touchstart', handleTouchStart)
+      element.removeEventListener('touchend', handleTouchEnd)
+      element.removeEventListener('touchcancel', handleTouchCancel)
     }
   }
 }

@@ -15,8 +15,9 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
         
         // Check PDF header
         if (bytes.length >= 4) {
-          const header = String.fromCharCode(...bytes.slice(0, 4))
-          if (header === '%PDF') {
+          const headerBytes = bytes.slice(0, 4)
+          if (headerBytes[0] === 0x25 && headerBytes[1] === 0x50 && 
+              headerBytes[2] === 0x44 && headerBytes[3] === 0x46) {
             resolve(true)
           } else {
             resolve(false)
@@ -36,7 +37,10 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
       
       // Handle rejected files
       if (rejectedFiles.length > 0) {
-        const errors = rejectedFiles.map(f => f.errors.map(e => e.message).join(', '))
+        const errors = rejectedFiles.map(f => {
+          const safeName = f.file?.name ? String(f.file.name).replace(/[<>&"']/g, '') : 'unknown'
+          return `${safeName}: ${f.errors.map(e => e.message).join(', ')}`
+        })
         setUploadStatus({ type: 'error', message: `Invalid files: ${errors.join(', ')}` })
         setTimeout(() => setUploadStatus(null), 5000)
         return
@@ -57,9 +61,11 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
         }
         
         if (invalidFiles.length > 0) {
+          // Sanitize file names to prevent XSS
+          const safeNames = invalidFiles.map(name => String(name).replace(/[<>&"']/g, ''))
           setUploadStatus({ 
             type: 'error', 
-            message: `Invalid PDF files: ${invalidFiles.join(', ')}` 
+            message: `Invalid PDF files: ${safeNames.join(', ')}` 
           })
           setTimeout(() => setUploadStatus(null), 5000)
         }

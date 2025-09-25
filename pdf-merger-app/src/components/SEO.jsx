@@ -1,27 +1,7 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
-function setMetaTag(name, content, attr = 'name') {
-  if (!content) return
-  let tag = document.querySelector(`meta[${attr}="${name}"]`)
-  if (!tag) {
-    tag = document.createElement('meta')
-    tag.setAttribute(attr, name)
-    document.head.appendChild(tag)
-  }
-  tag.setAttribute('content', content)
-}
-
-function setLinkTag(rel, href) {
-  if (!href) return
-  let link = document.querySelector(`link[rel="${rel}"]`)
-  if (!link) {
-    link = document.createElement('link')
-    link.setAttribute('rel', rel)
-    document.head.appendChild(link)
-  }
-  link.setAttribute('href', href)
-}
-
+// Secure SEO component using React portals
 export default function SEO({
   title,
   description,
@@ -31,35 +11,108 @@ export default function SEO({
   jsonLd
 }) {
   useEffect(() => {
-    if (title) document.title = title
-    setMetaTag('description', description)
-    if (keywords && keywords.length) setMetaTag('keywords', Array.isArray(keywords) ? keywords.join(', ') : String(keywords))
-    if (canonical) setLinkTag('canonical', canonical)
-
-    // Open Graph / Twitter basic
-    if (title) setMetaTag('og:title', title, 'property')
-    if (description) setMetaTag('og:description', description, 'property')
-    setMetaTag('og:type', 'website', 'property')
-    if (ogImage) setMetaTag('og:image', ogImage, 'property')
-
-    if (title) setMetaTag('twitter:title', title, 'property')
-    if (description) setMetaTag('twitter:description', description, 'property')
-    if (ogImage) setMetaTag('twitter:image', ogImage, 'property')
-    setMetaTag('twitter:card', 'summary_large_image', 'property')
-
-    // JSON-LD structured data
-    const existing = document.getElementById('seo-jsonld')
-    if (existing) existing.remove()
-    if (jsonLd) {
-      const script = document.createElement('script')
-      script.type = 'application/ld+json'
-      script.id = 'seo-jsonld'
-      script.text = JSON.stringify(jsonLd)
-      document.head.appendChild(script)
+    if (title && typeof title === 'string') {
+      document.title = title.slice(0, 60)
     }
-  }, [title, description, canonical, ogImage, JSON.stringify(jsonLd)])
+  }, [title])
 
-  return null
+  const sanitizeString = (str) => {
+    if (typeof str !== 'string') return ''
+    return str.replace(/[<>"'&]/g, '')
+  }
+
+  const isValidUrl = (url) => {
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  const metaTags = []
+  
+  if (description) {
+    metaTags.push(
+      <meta key="description" name="description" content={sanitizeString(description).slice(0, 160)} />
+    )
+  }
+  
+  if (keywords) {
+    const keywordString = Array.isArray(keywords) ? keywords.join(', ') : String(keywords)
+    metaTags.push(
+      <meta key="keywords" name="keywords" content={sanitizeString(keywordString).slice(0, 200)} />
+    )
+  }
+  
+  if (canonical && isValidUrl(canonical)) {
+    metaTags.push(
+      <link key="canonical" rel="canonical" href={canonical} />
+    )
+  }
+  
+  if (title) {
+    metaTags.push(
+      <meta key="og:title" property="og:title" content={sanitizeString(title).slice(0, 60)} />
+    )
+  }
+  
+  if (description) {
+    metaTags.push(
+      <meta key="og:description" property="og:description" content={sanitizeString(description).slice(0, 160)} />
+    )
+  }
+  
+  metaTags.push(
+    <meta key="og:type" property="og:type" content="website" />
+  )
+  
+  if (ogImage && isValidUrl(ogImage)) {
+    metaTags.push(
+      <meta key="og:image" property="og:image" content={ogImage} />
+    )
+  }
+  
+  if (title) {
+    metaTags.push(
+      <meta key="twitter:title" name="twitter:title" content={sanitizeString(title).slice(0, 60)} />
+    )
+  }
+  
+  if (description) {
+    metaTags.push(
+      <meta key="twitter:description" name="twitter:description" content={sanitizeString(description).slice(0, 160)} />
+    )
+  }
+  
+  if (ogImage && isValidUrl(ogImage)) {
+    metaTags.push(
+      <meta key="twitter:image" name="twitter:image" content={ogImage} />
+    )
+  }
+  
+  metaTags.push(
+    <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+  )
+  
+  if (jsonLd && typeof jsonLd === 'object') {
+    try {
+      const jsonString = JSON.stringify(jsonLd)
+      if (jsonString && jsonString.length < 10000) {
+        metaTags.push(
+          <script
+            key="json-ld"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: jsonString }}
+          />
+        )
+      }
+    } catch (error) {
+      console.warn('Invalid JSON-LD data:', error)
+    }
+  }
+
+  return createPortal(metaTags, document.head)
 }
 
 

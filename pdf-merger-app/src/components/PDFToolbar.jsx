@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useResponsive } from '../utils/responsive'
+import { useToast } from './Toast'
 import { 
   Share2, 
   RotateCw, 
@@ -33,6 +34,7 @@ export function PDFToolbar({
   const [showShareMenu, setShowShareMenu] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null)
   const { isMobile, isTablet, isTouchDevice } = useResponsive()
+  const { notify } = useToast()
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -88,7 +90,7 @@ export function PDFToolbar({
 
   const handleShare = async (platform) => {
     if (!mergedPdfUrl) {
-      alert('Please merge PDFs first to share')
+      notify('Please merge PDFs first to share', 'error')
       return
     }
 
@@ -102,9 +104,10 @@ export function PDFToolbar({
       case 'copy':
         try {
           await navigator.clipboard.writeText(mergedPdfUrl)
-          alert('Link copied to clipboard!')
+          notify('Link copied to clipboard!', 'success')
         } catch (err) {
           console.error('Failed to copy:', err)
+          notify('Failed to copy link', 'error')
         }
         break
       

@@ -21,13 +21,44 @@ self.addEventListener('install', event => {
 
 // Fetch event - serve cached content when offline
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
-      })
-  );
+  try {
+    // Validate request URL to prevent SSRF
+    const url = new URL(event.request.url);
+    const allowedOrigins = [self.location.origin];
+    
+    // Only allow same-origin requests and HTTPS
+    if (!allowedOrigins.includes(url.origin) || url.protocol !== 'https:') {
+      if (url.origin !== self.location.origin) {
+        return; // Block cross-origin requests
+      }
+    }
+    
+    // Block private IP ranges
+    const hostname = url.hostname;
+    if (hostname === 'localhost' || 
+        hostname.startsWith('127.') || 
+        hostname.startsWith('10.') ||
+        hostname.startsWith('192.168.') ||
+        hostname.startsWith('172.16.') ||
+        hostname.startsWith('169.254.')) {
+      return;
+    }
+    
+    event.respondWith(
+      caches.match(event.request)
+        .then(response => {
+          // Only return cached content, no network requests
+          return response || new Response('Not found in cache', { status: 404 });
+        })
+        .catch(error => {
+          console.error('Cache lookup failed:', error);
+          return new Response('Cache error', { status: 500 });
+        })
+    );
+  } catch (error) {
+    console.error('Invalid URL in service worker:', error);
+    return;
+  }
 });
 
 // Activate event - clean up old caches
