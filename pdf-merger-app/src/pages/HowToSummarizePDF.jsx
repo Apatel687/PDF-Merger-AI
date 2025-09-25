@@ -194,6 +194,7 @@ function HowToSummarizePDF() {
                   </div>
                 </div>
               </div>
+            </div>
 
             <div className="contact-section futuristic-card" style={{ padding: '30px', margin: '30px 0', textAlign: 'center' }}>
               <h2>Ready to Summarize Your PDFs?</h2>
