@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta name="theme-color" content="#3b82f6" />
     
     <!-- SEO Meta Tags -->
@@ -258,23 +261,53 @@
       });
     </script>
     
-    <!-- Service Worker Registration - Chrome Compatible -->
+    <!-- Service Worker Registration - Force Updates -->
     <script>
-      // Chrome-compatible service worker registration
-      if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
+      // Force service worker updates to prevent cache issues
+      if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
           navigator.serviceWorker.register('/sw.js', {
-            scope: '/'
+            scope: '/',
+            updateViaCache: 'none'
           })
           .then(registration => {
             console.log('SW registered: ', registration);
-            // Update on reload for Chrome
-            if (registration.waiting) {
-              registration.waiting.postMessage({type: 'SKIP_WAITING'});
-            }
+            
+            // Force immediate update
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New version available, force reload
+                  newWorker.postMessage({type: 'SKIP_WAITING'});
+                  window.location.reload();
+                }
+              });
+            });
+            
+            // Check for updates every 30 seconds
+            setInterval(() => {
+              registration.update();
+            }, 30000);
           })
           .catch(registrationError => {
             console.log('SW registration failed: ', registrationError);
+          });
+        });
+        
+        // Listen for SW updates
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
+      }
+      
+      // Clear old caches on load
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            if (name.includes('pdf-merger') && !name.includes(Date.now().toString().slice(0, 8))) {
+              caches.delete(name);
+            }
           });
         });
       }

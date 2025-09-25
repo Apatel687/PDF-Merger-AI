@@ -1,70 +1,59 @@
-// Service Worker for PDF Merger AI PWA
-const CACHE_NAME = 'pdf-merger-ai-v1';
-const urlsToCache = [
-  './',
-  './index.html',
-  './pdf.worker.min.js',
-  './pdf.min.js',
-  './vite.svg'
-];
+// Service Worker for cache management
+const CACHE_NAME = 'pdf-merger-v' + Date.now();
+const STATIC_CACHE = 'pdf-merger-static-v' + Date.now();
 
-// Install event - cache essential files
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
+// Force update on new version
+self.addEventListener('install', (event) => {
+  console.log('SW: Installing new version');
+  self.skipWaiting(); // Force activation
 });
 
-// Fetch event - serve cached content when offline
-self.addEventListener('fetch', event => {
-  try {
-    // Validate request URL to prevent SSRF
-    const url = new URL(event.request.url);
-    const allowedOrigins = [self.location.origin];
-    
-    // Only allow same-origin requests and HTTPS
-    if (!allowedOrigins.includes(url.origin) || url.protocol !== 'https:') {
-      if (url.origin !== self.location.origin) {
-        return; // Block cross-origin requests
-      }
-    }
-    
-    // Allow localhost for development
-    const hostname = url.hostname;
-    // Removed localhost blocking for development
-    
-    event.respondWith(
-      caches.match(event.request)
-        .then(response => {
-          // Only return cached content, no network requests
-          return response || new Response('Not found in cache', { status: 404 });
-        })
-        .catch(error => {
-          console.error('Cache lookup failed:', error);
-          return new Response('Cache error', { status: 500 });
-        })
-    );
-  } catch (error) {
-    console.error('Invalid URL in service worker:', error);
-    return;
-  }
-});
-
-// Activate event - clean up old caches
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
+  console.log('SW: Activating new version');
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE) {
+            console.log('SW: Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      return self.clients.claim(); // Take control immediately
     })
   );
+});
+
+// Handle fetch requests
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  
+  // Always fetch fresh for HTML files
+  if (url.pathname.endsWith('.html') || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-cache' })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+  
+  // Cache other resources
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      })
+  );
+});
+
+// Listen for messages from main thread
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
