@@ -148,7 +148,7 @@ function Home() {
     }
   }
 
-  // Handle annotation features (page numbers, watermarks)
+  // Handle annotation features (page numbers)
   const handleAnnotationFeature = async (feature) => {
     console.log('handleAnnotationFeature called with:', feature)
     console.log('pdfFiles:', pdfFiles)
@@ -161,7 +161,7 @@ function Home() {
     setIsLoading(true)
     try {
       console.log('Importing pdfAnnotations...')
-      const { addPageNumbers, addWatermark } = await import('../utils/pdfAnnotations')
+      const { addPageNumbers } = await import('../utils/pdfAnnotations')
       console.log('Import successful')
       
       if (feature === 'pageNumbers') {
@@ -170,19 +170,10 @@ function Home() {
         const url = URL.createObjectURL(result)
         setMergedPdfUrl({ url, name: `${pdfFiles[0].name.replace('.pdf', '')}_numbered.pdf` })
         console.log('Page numbers added successfully')
-      } else if (feature === 'watermark') {
-        const watermarkText = prompt('Enter watermark text:', 'CONFIDENTIAL')
-        if (watermarkText) {
-          console.log('Adding watermark:', watermarkText)
-          const result = await addWatermark(pdfFiles[0].file, watermarkText)
-          const url = URL.createObjectURL(result)
-          setMergedPdfUrl({ url, name: `${pdfFiles[0].name.replace('.pdf', '')}_watermarked.pdf` })
-          console.log('Watermark added successfully')
-        }
       }
     } catch (error) {
       console.error('Annotation error:', error)
-      alert(`Failed to ${feature === 'pageNumbers' ? 'add page numbers' : 'add watermark'}: ${error.message}`)
+      alert(`Failed to add page numbers: ${error.message}`)
     } finally {
       setIsLoading(false)
     }
@@ -339,35 +330,7 @@ function Home() {
             >
               {t('share')}
             </button>
-            <button 
-              className="futuristic-btn" 
-              onClick={async () => {
-                console.log('WATERMARK TEST BUTTON CLICKED!')
-                if (pdfFiles.length === 0) {
-                  alert('Please upload a PDF file first!')
-                  return
-                }
-                
-                try {
-                  const { addWatermark } = await import('../utils/pdfAnnotations')
-                  const result = await addWatermark(pdfFiles[0].file, 'TEST WATERMARK')
-                  const url = URL.createObjectURL(result)
-                  setMergedPdfUrl({ url, name: 'test_watermarked.pdf' })
-                  alert('Watermark added successfully!')
-                } catch (error) {
-                  console.error('Watermark test error:', error)
-                  alert('Watermark failed: ' + error.message)
-                }
-              }}
-              style={{ 
-                cursor: 'pointer', 
-                pointerEvents: 'auto',
-                background: '#10b981',
-                color: 'white'
-              }}
-            >
-              TEST WATERMARK
-            </button>
+
           </div>
           {pdfFiles.length === 0 ? (
             <div className="welcome-section">
@@ -440,39 +403,7 @@ function Home() {
                   >
                     <Bookmark size={18} /> {t('addPageNumbers')}
                   </button>
-                  <button 
-                    className="tool-button" 
-                    onClick={async (e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      console.log('Direct watermark button clicked')
-                      
-                      if (pdfFiles.length === 0) {
-                        alert('Please upload a PDF file first!')
-                        return
-                      }
-                      
-                      const watermarkText = prompt('Enter watermark text:', 'CONFIDENTIAL')
-                      if (!watermarkText) return
-                      
-                      try {
-                        setIsLoading(true)
-                        const { addWatermark } = await import('../utils/pdfAnnotations')
-                        const result = await addWatermark(pdfFiles[0].file, watermarkText)
-                        const url = URL.createObjectURL(result)
-                        setMergedPdfUrl({ url, name: `${pdfFiles[0].name.replace('.pdf', '')}_watermarked.pdf` })
-                        alert('Watermark added successfully!')
-                      } catch (error) {
-                        console.error('Direct watermark error:', error)
-                        alert('Watermark failed: ' + error.message)
-                      } finally {
-                        setIsLoading(false)
-                      }
-                    }}
-                    style={{ cursor: 'pointer', pointerEvents: 'auto' }}
-                  >
-                    <Shield size={18} /> {t('addWatermark')}
-                  </button>
+
                   <button className="tool-button" onClick={() => handleFeatureClick('summarize')}>
                     <FileSearch size={18} /> {t('summarize')} PDF (AI)
                   </button>
@@ -496,6 +427,9 @@ function Home() {
                   </button>
                   <button className="tool-button" onClick={() => navigate('/office')}>
                     <FileText size={18} /> PPT → PDF
+                  </button>
+                  <button className="tool-button" onClick={() => navigate('/annotate')}>
+                    <Shield size={18} /> {t('addWatermark')}
                   </button>
                   <button className="tool-button" onClick={() => setShowShareModal(true)}>
                     <Share2 size={18} /> {t('share')}
