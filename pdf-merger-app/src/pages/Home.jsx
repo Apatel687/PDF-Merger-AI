@@ -7,12 +7,15 @@ import { PDFToolbar } from '../components/PDFToolbar'
 import { ShareModal } from '../components/ShareModal'
 import { PageIndexModal } from '../components/PageIndexModal'
 import ThemeSwitcher from '../components/ThemeSwitcher'
+import LanguageSwitcher from '../components/LanguageSwitcher'
 import { FileText, Download, Trash2, Share2, Zap, Sparkles, Rocket, Shield, Bookmark, FileSearch, MessageSquare } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
+import { useTranslation } from '../hooks/useTranslation'
 import SEO from '../components/SEO'
 
 function Home() {
   const { theme, accentColor } = useTheme()
+  const { t, getLocalizedKeywords, language } = useTranslation()
   const navigate = useNavigate()
   const [pdfFiles, setPdfFiles] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -142,19 +145,9 @@ function Home() {
   return (
     <div className="app">
       <SEO 
-        title="Free PDF Tools Online – Merge, Split, Compress | AI & Privacy‑First"
-        description="Free unlimited PDF tools (no signup). Merge PDF free online, split, compress, convert PDF ⇆ Word/Excel/PPT, images ⇆ PDF, AI PDF summarizer, Ask your PDF (chat). Local, secure, browser-based."
-        keywords={[
-          'Free PDF tools online','Merge PDF free online','Split PDF instantly','Compress PDF online free',
-          'Convert PDF to Word free','Convert Word to PDF online','Convert Excel to PDF free','Convert PowerPoint to PDF free',
-          'AI PDF summarizer free','Chat with PDF online','Privacy-first PDF editor','Local PDF tools (no server upload)',
-          'PDF merger for business','Student PDF tools','Academic PDF editor','Research paper PDF tools',
-          'SmallPDF alternative free','ILovePDF alternative','PDFtk alternative online','Sejda alternative free',
-          'PDF tools USA','PDF editor UK','PDF merger Canada','PDF tools Australia',
-          'Merge PDF without watermark','No registration PDF tools','Unlimited PDF processing','Browser PDF editor',
-          'PDF tools for lawyers','PDF merger for students','PDF editor for teachers','Business document merger',
-          'Thesis PDF tools','Legal document merger','Invoice PDF tools','Contract PDF editor'
-        ]}
+        title={language === 'en' ? "Free PDF Tools Online – Merge, Split, Compress | AI & Privacy‑First" : `${t('heroTitle')} | PDF Merger AI`}
+        description={t('heroDescription')}
+        keywords={getLocalizedKeywords()}
         canonical="https://pdf-merger-app.netlify.app/"
         ogImage="https://pdf-merger-app.netlify.app/pdf-icon-512.png"
         jsonLd={{
@@ -187,7 +180,10 @@ function Home() {
           ]
         }}
       />
-      <ThemeSwitcher />
+      <div style={{ position: 'fixed', top: '20px', right: '20px', display: 'flex', gap: '12px', zIndex: 1000 }}>
+        <LanguageSwitcher />
+        <ThemeSwitcher />
+      </div>
       
       <header className="app-header futuristic-card">
         <div className="header-content">
@@ -200,10 +196,10 @@ function Home() {
             </div>
             <div className="logo-text">
               <h1 className="logo-title clickable-title" onClick={handleTitleClick}>
-                <span className="logo-main">PDF Merger</span>
-                <span className="logo-ai">AI</span>
+                <span className="logo-main">{t('appTitle').split(' ')[0]} {t('appTitle').split(' ')[1]}</span>
+                <span className="logo-ai">{t('appTitle').split(' ')[2]}</span>
               </h1>
-              <p className="subtitle">Next-Gen PDF Processing powered by AI</p>
+              <p className="subtitle">{t('subtitle')}</p>
             </div>
           </div>
           
@@ -226,9 +222,9 @@ function Home() {
       <main className="app-main">
         <div className="container">
           <div className="features-actions" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
-            <button className="futuristic-btn" onClick={() => handleFeatureClick('merge')}>Merge PDFs</button>
-            <button className="futuristic-btn" onClick={() => handleFeatureClick('summarize')}>Summarize PDF</button>
-            <button className="futuristic-btn" onClick={() => handleFeatureClick('ask')}>Ask your PDF</button>
+            <button className="futuristic-btn" onClick={() => handleFeatureClick('merge')}>{t('merge')}</button>
+            <button className="futuristic-btn" onClick={() => handleFeatureClick('summarize')}>{t('summarize')}</button>
+            <button className="futuristic-btn" onClick={() => handleFeatureClick('ask')}>{t('askPdf')}</button>
             <button className="futuristic-btn" onClick={() => navigate('/images')}>Image Tools</button>
             <button className="futuristic-btn" onClick={() => navigate('/office')}>Office Tools</button>
             <button className="futuristic-btn" onClick={() => navigate('/annotate')}>Annotation</button>
@@ -238,8 +234,8 @@ function Home() {
             <div className="welcome-section">
               <div className="hero-section">
                 <div className="hero-content">
-                  <h2 className="hero-title gradient-text">Best Free PDF Merger with AI</h2>
-                  <p className="hero-description">Browser-based PDF tool (offline support): merge, split, compress, convert Office ⇆ PDF, and summarize with AI. Free unlimited PDF tools, privacy-first, no uploads.</p>
+                  <h2 className="hero-title gradient-text">{t('heroTitle')}</h2>
+                  <p className="hero-description">{t('heroDescription')}</p>
                 </div>
                 
                 <div className="ai-features">

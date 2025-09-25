@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ToastProvider } from './components/Toast'
+import { LanguageProvider } from './contexts/LanguageContext'
 import Home from './pages/Home'
 import Summarize from './pages/Summarize'
 import AskPDF from './pages/AskPDF'
@@ -17,8 +18,9 @@ import './App.css'
 function App() {
 
   return (
-    <ToastProvider>
-      <Router>
+    <LanguageProvider>
+      <ToastProvider>
+        <Router>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/summarize" element={<Summarize />} />
@@ -32,8 +34,9 @@ function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
         </Routes>
-      </Router>
-    </ToastProvider>
+        </Router>
+      </ToastProvider>
+    </LanguageProvider>
   )
 }
 
