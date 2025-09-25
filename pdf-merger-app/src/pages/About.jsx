@@ -12,7 +12,12 @@ function About() {
       <SEO 
         title="About – Free PDF Tools (AI, Local, Privacy‑First) | PDF Merger AI"
         description="About PDF Merger AI: Free unlimited PDF tools online. Merge, split, compress, convert Office ⇆ PDF, AI PDF summarizer, Chat with PDF. 100% local, privacy‑first."
-        keywords={[ 'About PDF Merger AI','Free PDF tools online','Privacy-first PDF editor','Local PDF processing','AI PDF tools','PDF merger company' ]}
+        keywords={[ 
+          'About PDF Merger AI','Free PDF tools online','Privacy-first PDF editor','Local PDF processing','AI PDF tools','PDF merger company',
+          'SmallPDF vs PDF Merger AI','ILovePDF alternative','Adobe Acrobat alternative free','PDFtk vs PDF Merger AI',
+          'Best PDF tools 2024','Top PDF merger software','PDF editor comparison','Free PDF software review',
+          'PDF tools for remote work','Digital document management','Paperless office tools','Document workflow automation'
+        ]}
         canonical="https://pdf-merger-app.netlify.app/about"
         ogImage="https://pdf-merger-app.netlify.app/pdf-icon-512.png"
         jsonLd={{

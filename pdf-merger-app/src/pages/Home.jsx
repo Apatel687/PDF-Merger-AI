@@ -147,7 +147,13 @@ function Home() {
         keywords={[
           'Free PDF tools online','Merge PDF free online','Split PDF instantly','Compress PDF online free',
           'Convert PDF to Word free','Convert Word to PDF online','Convert Excel to PDF free','Convert PowerPoint to PDF free',
-          'AI PDF summarizer free','Chat with PDF online','Privacy-first PDF editor','Local PDF tools (no server upload)'
+          'AI PDF summarizer free','Chat with PDF online','Privacy-first PDF editor','Local PDF tools (no server upload)',
+          'PDF merger for business','Student PDF tools','Academic PDF editor','Research paper PDF tools',
+          'SmallPDF alternative free','ILovePDF alternative','PDFtk alternative online','Sejda alternative free',
+          'PDF tools USA','PDF editor UK','PDF merger Canada','PDF tools Australia',
+          'Merge PDF without watermark','No registration PDF tools','Unlimited PDF processing','Browser PDF editor',
+          'PDF tools for lawyers','PDF merger for students','PDF editor for teachers','Business document merger',
+          'Thesis PDF tools','Legal document merger','Invoice PDF tools','Contract PDF editor'
         ]}
         canonical="https://pdf-merger-app.netlify.app/"
         ogImage="https://pdf-merger-app.netlify.app/pdf-icon-512.png"
