@@ -1,23 +1,20 @@
-import { useNavigate } from 'react-router-dom'
-import ThemeSwitcher from '../components/ThemeSwitcher'
+import { useNavigate, Link } from 'react-router-dom'
+import SimpleLanguageSwitcher from '../components/SimpleLanguageSwitcher'
 import SEO from '../components/SEO'
-import { FileText, Zap, Shield, Users, Award, Globe } from 'lucide-react'
-import './About.css'
+import { FileText, Zap, Shield, Users, Award, Globe, Sparkles } from 'lucide-react'
+import { useTranslation } from '../hooks/useTranslation'
+
 
 function About() {
   const navigate = useNavigate()
+  const { t, getLocalizedKeywords, language } = useTranslation()
 
   return (
     <div className="app">
       <SEO 
         title="About – Free PDF Tools (AI, Local, Privacy‑First) | PDF Merger AI"
         description="About PDF Merger AI: Free unlimited PDF tools online. Merge, split, compress, convert Office ⇆ PDF, AI PDF summarizer, Chat with PDF. 100% local, privacy‑first."
-        keywords={[ 
-          'About PDF Merger AI','Free PDF tools online','Privacy-first PDF editor','Local PDF processing','AI PDF tools','PDF merger company',
-          'SmallPDF vs PDF Merger AI','ILovePDF alternative','Adobe Acrobat alternative free','PDFtk vs PDF Merger AI',
-          'Best PDF tools 2024','Top PDF merger software','PDF editor comparison','Free PDF software review',
-          'PDF tools for remote work','Digital document management','Paperless office tools','Document workflow automation'
-        ]}
+        keywords={getLocalizedKeywords()}
         canonical="https://pdf-merger-app.netlify.app/about"
         ogImage="https://pdf-merger-app.netlify.app/pdf-icon-512.png"
         jsonLd={{
@@ -34,21 +31,28 @@ function About() {
           }
         }}
       />
-      <ThemeSwitcher />
+
 
       <header className="app-header futuristic-card">
         <div className="header-content">
           <div className="logo">
+            <div className="logo-icon-container" onClick={(e) => { e.preventDefault(); navigate('/'); }} style={{ cursor: 'pointer' }}>
+              <div className="logo-icon-wrapper">
+                <Sparkles size={40} className="logo-icon" />
+                <Zap size={20} className="logo-accent" />
+              </div>
+            </div>
             <div className="logo-text">
-              <h1 className="logo-title clickable-title" onClick={() => navigate('/') }>
+              <h1 className="logo-title clickable-title" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
                 <span className="logo-main">PDF Merger</span>
                 <span className="logo-ai">AI</span>
               </h1>
               <p className="subtitle">Next-Gen PDF Processing powered by AI</p>
             </div>
           </div>
-          <div>
-            <button className="futuristic-btn" onClick={() => navigate(-1)}>← Back</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <SimpleLanguageSwitcher />
+            <button className="futuristic-btn" onClick={() => navigate(-1)}>{t('back')}</button>
           </div>
         </div>
       </header>
@@ -56,19 +60,10 @@ function About() {
       <main className="app-main">
         <div className="container">
           <div className="welcome-section">
-            <h2 className="hero-title gradient-text">About PDF Merger AI</h2>
-            <p className="hero-description">Advanced PDF tools with AI capabilities, designed for privacy and performance.</p>
+            <h2 className="hero-title gradient-text">{t('about')} PDF Merger AI</h2>
+            <p className="hero-description">{t('heroDescription')}</p>
 
-            <div className="features-grid" style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(3, 1fr)', 
-              gap: '24px', 
-              margin: '40px 0',
-              '@media (max-width: 768px)': {
-                gridTemplateColumns: '1fr',
-                gap: '20px'
-              }
-            }}>
+            <div className="features-grid">
               <div className="feature-card futuristic-card" style={{
                 padding: '30px 20px',
                 textAlign: 'center',
@@ -80,8 +75,8 @@ function About() {
                 <div className="feature-icon" style={{ marginBottom: '20px' }}>
                   <Shield size={48} style={{ color: '#10b981' }} />
                 </div>
-                <h3 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>Privacy First</h3>
-                <p style={{ lineHeight: '1.6', flex: 1 }}>All processing happens locally in your browser. Your documents never leave your device, ensuring complete privacy and security.</p>
+                <h3 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>{t('privacyFirst')}</h3>
+                <p style={{ lineHeight: '1.6', flex: 1 }}>{t('privacyFirstDesc')}</p>
               </div>
 
               <div className="feature-card futuristic-card" style={{
@@ -95,8 +90,8 @@ function About() {
                 <div className="feature-icon" style={{ marginBottom: '20px' }}>
                   <Zap size={48} style={{ color: '#3b82f6' }} />
                 </div>
-                <h3 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>AI-Powered</h3>
-                <p style={{ lineHeight: '1.6', flex: 1 }}>Advanced AI features including PDF summarization and document Q&A, all running locally for enhanced privacy.</p>
+                <h3 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>{t('aiPowered')}</h3>
+                <p style={{ lineHeight: '1.6', flex: 1 }}>{t('aiPoweredDesc')}</p>
               </div>
 
               <div className="feature-card futuristic-card" style={{
@@ -110,8 +105,8 @@ function About() {
                 <div className="feature-icon" style={{ marginBottom: '20px' }}>
                   <FileText size={48} style={{ color: '#8b5cf6' }} />
                 </div>
-                <h3 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>Complete Toolkit</h3>
-                <p style={{ lineHeight: '1.6', flex: 1 }}>Merge, split, compress, convert, annotate, and chat with PDFs. Everything you need for professional document processing.</p>
+                <h3 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>{t('completeToolkit')}</h3>
+                <p style={{ lineHeight: '1.6', flex: 1 }}>{t('completeToolkitDesc')}</p>
               </div>
             </div>
 
@@ -201,17 +196,6 @@ function About() {
               <h2>Get in Touch</h2>
               <p>Have questions, feedback, or suggestions? We'd love to hear from you!</p>
               <p><strong>Email:</strong> <a href="mailto:support@pdfmerger.ai">support@pdfmerger.ai</a></p>
-              <p><strong>Support:</strong> Available through our FAQ section and documentation</p>
-            </div>
-
-            <div className="cta-section" style={{ textAlign: 'center', margin: '40px 0' }}>
-              <button 
-                className="futuristic-btn primary" 
-                style={{ padding: '15px 30px', fontSize: '1.1em' }}
-                onClick={() => navigate('/')}
-              >
-                Start Using PDF Tools →
-              </button>
             </div>
           </div>
         </div>

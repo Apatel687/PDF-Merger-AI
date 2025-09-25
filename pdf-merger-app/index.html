@@ -89,8 +89,100 @@
     <meta name="msapplication-TileImage" content="/pdf-icon-192.png">
     <meta name="msapplication-TileColor" content="#3b82f6">
     
-    <!-- PDF.js setup - using local files for better reliability -->
-    <script src="/pdf.min.js"></script>
+    <!-- PDF.js setup with fallback -->
+    <script>
+      // Load PDF.js with fallback
+      (function() {
+        const script = document.createElement('script')
+        script.src = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js'
+        script.onload = function() {
+          if (window.pdfjsLib) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
+            console.log('PDF.js loaded successfully')
+          }
+        }
+        script.onerror = function() {
+          console.error('Failed to load PDF.js from CDN')
+          // Try alternative CDN
+          const fallbackScript = document.createElement('script')
+          fallbackScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
+          fallbackScript.onload = function() {
+            if (window.pdfjsLib) {
+              window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+              console.log('PDF.js loaded from fallback CDN')
+            }
+          }
+          document.head.appendChild(fallbackScript)
+        }
+        document.head.appendChild(script)
+      })()
+    </script>
+    
+    <!-- Theme initialization to prevent flash -->
+    <style>
+      /* Prevent FOUC (Flash of Unstyled Content) */
+      #root {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      #root.loaded {
+        opacity: 1;
+      }
+      /* Loading skeleton */
+      .loading-skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    </style>
+    <script>
+      (function() {
+        const savedThemeMode = localStorage.getItem('themeMode') || 'system'
+        const savedAccentColor = localStorage.getItem('accentColor')
+        
+        const root = document.documentElement
+        
+        // Apply dark mode based on theme mode
+        let isDark = false
+        if (savedThemeMode === 'system') {
+          isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        } else {
+          isDark = savedThemeMode === 'dark'
+        }
+        
+        root.classList.toggle('dark', isDark)
+        
+        // Apply accent color immediately
+        if (savedAccentColor) {
+          root.style.setProperty('--accent-color', savedAccentColor)
+          root.style.setProperty('--ai-gradient-start', savedAccentColor)
+          
+          // Calculate darker gradient end
+          const hex = savedAccentColor.replace('#', '')
+          const r = parseInt(hex.substr(0, 2), 16)
+          const g = parseInt(hex.substr(2, 2), 16)
+          const b = parseInt(hex.substr(4, 2), 16)
+          
+          const newR = Math.max(0, Math.min(255, r * 0.8))
+          const newG = Math.max(0, Math.min(255, g * 0.8))
+          const newB = Math.max(0, Math.min(255, b * 0.8))
+          
+          const gradientEnd = `#${Math.round(newR).toString(16).padStart(2, '0')}${Math.round(newG).toString(16).padStart(2, '0')}${Math.round(newB).toString(16).padStart(2, '0')}`
+          root.style.setProperty('--ai-gradient-end', gradientEnd)
+        }
+        
+        // Prevent FOUC
+        document.addEventListener('DOMContentLoaded', () => {
+          setTimeout(() => {
+            document.getElementById('root').classList.add('loaded')
+          }, 100)
+        })
+      })()
+    </script>
   </head>
   <body>
     <!-- Hidden SEO Content for Search Engines -->
@@ -106,12 +198,7 @@
     <!-- Clean App Container -->
     <div id="root"></div>
     
-    <!-- Footer Navigation (minimal) -->
-    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); padding: 8px; text-align: center; font-size: 12px; border-top: 1px solid #eee; z-index: 1000;">
-      <a href="/about.html" style="margin: 0 8px; color: #666; text-decoration: none;">About</a>
-      <a href="/privacy.html" style="margin: 0 8px; color: #666; text-decoration: none;">Privacy</a>
-      <a href="/terms.html" style="margin: 0 8px; color: #666; text-decoration: none;">Terms</a>
-    </footer>
+
 
     <script type="module" src="/src/main.jsx"></script>
     
@@ -149,9 +236,10 @@
       });
     </script>
     
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration - DISABLED FOR DEVELOPMENT -->
     <script>
-      if ('serviceWorker' in navigator) {
+      // Service worker disabled for localhost development
+      if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
         navigator.serviceWorker.register('/sw.js')
           .then(registration => {
             console.log('SW registered: ', registration);

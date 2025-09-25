@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useTheme } from '../contexts/ThemeContext'
+import { useDropdown } from '../contexts/DropdownContext'
 import { Sun, Moon, Palette, Image, Settings, X } from 'lucide-react'
 import './ThemeSwitcher.css'
 
@@ -22,32 +24,36 @@ const backgroundThemes = [
 
 export default function ThemeSwitcher() {
   const { isDarkMode, accentColor, backgroundTheme, toggleDarkMode, setAccentColor, setBackgroundTheme } = useTheme()
-  const [isOpen, setIsOpen] = useState(false)
+  const { toggleDropdown, closeDropdown, isOpen } = useDropdown()
+  const isDropdownOpen = isOpen('theme')
 
-  const toggleMenu = () => setIsOpen(!isOpen)
-  const closeMenu = () => setIsOpen(false)
+  const toggleMenu = () => toggleDropdown('theme')
+  const closeMenu = () => closeDropdown()
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isOpen && !event.target.closest('.theme-dropdown')) {
-        closeMenu()
-      }
-    }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isOpen])
 
   return (
     <div className="theme-switcher">
       <div className="theme-dropdown">
         <button className="settings-btn futuristic-btn" onClick={toggleMenu}>
-          <Settings size={20} />
+          <Settings size={16} />
+          <span style={{ marginLeft: '8px' }}>Settings</span>
         </button>
         
-        {isOpen && (
-          <div className="theme-menu">
+        {isDropdownOpen && createPortal(
+          <div className="theme-menu" style={{
+            position: 'fixed',
+            top: '70px',
+            right: '20px',
+            background: 'var(--card-background)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid var(--glass-border)',
+            borderRadius: 'var(--border-radius-lg)',
+            padding: '1.5rem',
+            minWidth: '280px',
+            boxShadow: 'var(--glass-shadow)',
+            zIndex: 10001
+          }}>
             <button className="close-btn" onClick={closeMenu}>
               <X size={16} />
             </button>
@@ -100,7 +106,8 @@ export default function ThemeSwitcher() {
                 ))}
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </div>

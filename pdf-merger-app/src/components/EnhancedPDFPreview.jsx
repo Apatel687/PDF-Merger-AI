@@ -35,12 +35,9 @@ import {
 } from 'lucide-react'
 import './EnhancedPDFPreview.css'
 
-// Set up PDF.js worker with better error handling
-try {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
-} catch (error) {
-  console.warn('Using fallback PDF worker:', error)
-  pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`
+// Set up PDF.js worker
+if (typeof window !== 'undefined') {
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`
 }
 
 function PDFPageThumbnail({ 
@@ -80,20 +77,10 @@ function PDFPageThumbnail({
           loading={<div className="loading-placeholder">Loading...</div>}
           error={<div className="error-placeholder">Error loading PDF</div>}
           options={{
-            cMapUrl: '/cmaps/',
+            cMapUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/cmaps/',
             cMapPacked: true,
-            standardFontDataUrl: '/standard_fonts/',
-            disableAutoFetch: true,
-            disableStream: true,
-            disableRange: true,
-            enableXfa: false,
-            verbosity: 0,
-            maxImageSize: 10485760,
-            isEvalSupported: false,
-            useSystemFonts: true,
-            disableFontFace: true,
-            disableCreateObjectURL: false,
-            pdfBug: false
+            standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/standard_fonts/',
+            verbosity: 0
           }}
 
         >

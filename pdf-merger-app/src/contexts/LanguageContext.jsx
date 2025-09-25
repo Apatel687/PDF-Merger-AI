@@ -11,23 +11,30 @@ export const useLanguage = () => {
 }
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState(() => {
-    const saved = localStorage.getItem('pdf-merger-language')
-    if (saved) return saved
-    
-    // Auto-detect browser language
-    const browserLang = navigator.language.split('-')[0]
-    const supportedLangs = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'zh', 'ja', 'ko', 'ar', 'hi']
-    return supportedLangs.includes(browserLang) ? browserLang : 'en'
-  })
+  const [language, setLanguage] = useState('en') // Default to English
 
+  // Load saved language on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('pdf-merger-language')
+    if (saved && saved !== language) {
+      setLanguage(saved)
+    }
+  }, [])
+
+  // Save language changes
   useEffect(() => {
     localStorage.setItem('pdf-merger-language', language)
     document.documentElement.lang = language
+    console.log('Language applied:', language)
   }, [language])
 
   const changeLanguage = (newLanguage) => {
-    setLanguage(newLanguage)
+    console.log('Changing language to:', newLanguage)
+    if (newLanguage !== language) {
+      setLanguage(newLanguage)
+      localStorage.setItem('pdf-merger-language', newLanguage)
+      document.documentElement.lang = newLanguage
+    }
   }
 
   return (

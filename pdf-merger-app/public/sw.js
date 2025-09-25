@@ -33,16 +33,9 @@ self.addEventListener('fetch', event => {
       }
     }
     
-    // Block private IP ranges
+    // Allow localhost for development
     const hostname = url.hostname;
-    if (hostname === 'localhost' || 
-        hostname.startsWith('127.') || 
-        hostname.startsWith('10.') ||
-        hostname.startsWith('192.168.') ||
-        hostname.startsWith('172.16.') ||
-        hostname.startsWith('169.254.')) {
-      return;
-    }
+    // Removed localhost blocking for development
     
     event.respondWith(
       caches.match(event.request)

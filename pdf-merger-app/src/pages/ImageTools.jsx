@@ -97,7 +97,18 @@ function ImageTools() {
     if (!pdf) return
     setIsBusy(true)
     try {
-      const { pdfjsLib } = await import('../utils/pdfSetup.js')
+      // Wait for PDF.js to load
+      let attempts = 0
+      while (!window.pdfjsLib && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+        attempts++
+      }
+      
+      if (!window.pdfjsLib) {
+        throw new Error('PDF.js library not loaded')
+      }
+      
+      const pdfjsLib = window.pdfjsLib
       const ab = await pdf.arrayBuffer()
       const loadingTask = pdfjsLib.getDocument({ data: ab })
       const doc = await loadingTask.promise

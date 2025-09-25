@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { FileUpload } from '../components/FileUpload'
 import { EnhancedPDFPreview } from '../components/EnhancedPDFPreview'
@@ -6,16 +6,18 @@ import { EnhancedMergeControls } from '../components/EnhancedMergeControls'
 import { PDFToolbar } from '../components/PDFToolbar'
 import { ShareModal } from '../components/ShareModal'
 import { PageIndexModal } from '../components/PageIndexModal'
-import ThemeSwitcher from '../components/ThemeSwitcher'
-import LanguageSwitcher from '../components/LanguageSwitcher'
-import { FileText, Download, Trash2, Share2, Zap, Sparkles, Rocket, Shield, Bookmark, FileSearch, MessageSquare } from 'lucide-react'
+
+import SimpleLanguageSwitcher from '../components/SimpleLanguageSwitcher'
+import { FileText, Download, Trash2, Share2, Zap, Sparkles, Rocket, Shield, Bookmark, FileSearch, MessageSquare, Sun, Moon, Hash, Stamp } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useTranslation } from '../hooks/useTranslation'
 import SEO from '../components/SEO'
 
 function Home() {
-  const { theme, accentColor } = useTheme()
+  const { theme, accentColor, toggleDarkMode } = useTheme()
   const { t, getLocalizedKeywords, language } = useTranslation()
+  
+
   const navigate = useNavigate()
   const [pdfFiles, setPdfFiles] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -99,14 +101,18 @@ function Home() {
   }
 
   // Handle title click to go to home page (reset app state)
-  const handleTitleClick = () => {
-    setPdfFiles([])
-    setMergedPdfUrl(null)
-    setSplitResults([])
-    setFileRotations({})
-    setDeletedPages({})
-    setIsLoading(false)
-  }
+  const handleTitleClick = useCallback(() => {
+    console.log('Title clicked - resetting app state')
+    // Use requestAnimationFrame to prevent visual glitches
+    requestAnimationFrame(() => {
+      setPdfFiles([])
+      setMergedPdfUrl(null)
+      setSplitResults([])
+      setFileRotations({})
+      setDeletedPages({})
+      setIsLoading(false)
+    })
+  }, [])
 
   // Feature card click handlers with real functionality
   const handleFeatureClick = (featureType) => {
@@ -139,6 +145,46 @@ function Home() {
         break
       default:
         break
+    }
+  }
+
+  // Handle annotation features (page numbers, watermarks)
+  const handleAnnotationFeature = async (feature) => {
+    console.log('handleAnnotationFeature called with:', feature)
+    console.log('pdfFiles:', pdfFiles)
+    
+    if (pdfFiles.length === 0) {
+      alert('Please upload a PDF file first')
+      return
+    }
+    
+    setIsLoading(true)
+    try {
+      console.log('Importing pdfAnnotations...')
+      const { addPageNumbers, addWatermark } = await import('../utils/pdfAnnotations')
+      console.log('Import successful')
+      
+      if (feature === 'pageNumbers') {
+        console.log('Adding page numbers...')
+        const result = await addPageNumbers(pdfFiles[0].file)
+        const url = URL.createObjectURL(result)
+        setMergedPdfUrl({ url, name: `${pdfFiles[0].name.replace('.pdf', '')}_numbered.pdf` })
+        console.log('Page numbers added successfully')
+      } else if (feature === 'watermark') {
+        const watermarkText = prompt('Enter watermark text:', 'CONFIDENTIAL')
+        if (watermarkText) {
+          console.log('Adding watermark:', watermarkText)
+          const result = await addWatermark(pdfFiles[0].file, watermarkText)
+          const url = URL.createObjectURL(result)
+          setMergedPdfUrl({ url, name: `${pdfFiles[0].name.replace('.pdf', '')}_watermarked.pdf` })
+          console.log('Watermark added successfully')
+        }
+      }
+    } catch (error) {
+      console.error('Annotation error:', error)
+      alert(`Failed to ${feature === 'pageNumbers' ? 'add page numbers' : 'add watermark'}: ${error.message}`)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -180,22 +226,19 @@ function Home() {
           ]
         }}
       />
-      <div style={{ position: 'fixed', top: '20px', right: '20px', display: 'flex', gap: '12px', zIndex: 1000 }}>
-        <LanguageSwitcher />
-        <ThemeSwitcher />
-      </div>
+
       
       <header className="app-header futuristic-card">
         <div className="header-content">
           <div className="logo">
-            <div className="logo-icon-container">
+            <div className="logo-icon-container" onClick={(e) => { e.preventDefault(); navigate('/'); }} style={{ cursor: 'pointer' }}>
               <div className="logo-icon-wrapper">
-                <FileText size={40} className="logo-icon" />
+                <Sparkles size={40} className="logo-icon" />
                 <Zap size={20} className="logo-accent" />
               </div>
             </div>
             <div className="logo-text">
-              <h1 className="logo-title clickable-title" onClick={handleTitleClick}>
+              <h1 className="logo-title clickable-title" onClick={(e) => { e.preventDefault(); handleTitleClick(); }}>
                 <span className="logo-main">{t('appTitle').split(' ')[0]} {t('appTitle').split(' ')[1]}</span>
                 <span className="logo-ai">{t('appTitle').split(' ')[2]}</span>
               </h1>
@@ -203,18 +246,15 @@ function Home() {
             </div>
           </div>
           
-          <div className="header-stats">
-            <div className="stat-item">
-              <Sparkles size={20} />
-              <span className="stat-value">{pdfFiles.length}</span>
-              <span className="stat-label">Files</span>
-            </div>
-            <div className="stat-item">
-              <Rocket size={20} />
-              <span className="stat-value">{shareStats.shares}</span>
-              <span className="stat-label">Shares</span>
-            </div>
-            {/* Share quick action in header via mini toolbar below */}
+          <div className="header-controls" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <button 
+              className="futuristic-btn" 
+              onClick={toggleDarkMode}
+              title="Toggle dark/light mode"
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            <SimpleLanguageSwitcher />
           </div>
         </div>
       </header>
@@ -222,13 +262,112 @@ function Home() {
       <main className="app-main">
         <div className="container">
           <div className="features-actions" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
-            <button className="futuristic-btn" onClick={() => handleFeatureClick('merge')}>{t('merge')}</button>
-            <button className="futuristic-btn" onClick={() => handleFeatureClick('summarize')}>{t('summarize')}</button>
-            <button className="futuristic-btn" onClick={() => handleFeatureClick('ask')}>{t('askPdf')}</button>
-            <button className="futuristic-btn" onClick={() => navigate('/images')}>Image Tools</button>
-            <button className="futuristic-btn" onClick={() => navigate('/office')}>Office Tools</button>
-            <button className="futuristic-btn" onClick={() => navigate('/annotate')}>Annotation</button>
-            <button className="futuristic-btn" onClick={() => handleFeatureClick('share')}>Share</button>
+            <button 
+              className="futuristic-btn" 
+              onClick={(e) => {
+                e.preventDefault()
+                console.log('Merge button clicked')
+                handleFeatureClick('merge')
+              }}
+              style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+            >
+              {t('merge')}
+            </button>
+            <button 
+              className="futuristic-btn" 
+              onClick={(e) => {
+                e.preventDefault()
+                console.log('Summarize button clicked')
+                handleFeatureClick('summarize')
+              }}
+              style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+            >
+              {t('summarize')}
+            </button>
+            <button 
+              className="futuristic-btn" 
+              onClick={(e) => {
+                e.preventDefault()
+                console.log('Ask PDF button clicked')
+                handleFeatureClick('ask')
+              }}
+              style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+            >
+              {t('askPdf')}
+            </button>
+            <button 
+              className="futuristic-btn" 
+              onClick={(e) => {
+                e.preventDefault()
+                console.log('Images button clicked')
+                navigate('/images')
+              }}
+              style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+            >
+              {t('imageTools')}
+            </button>
+            <button 
+              className="futuristic-btn" 
+              onClick={(e) => {
+                e.preventDefault()
+                console.log('Office button clicked')
+                navigate('/office')
+              }}
+              style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+            >
+              {t('officeTools')}
+            </button>
+            <button 
+              className="futuristic-btn" 
+              onClick={(e) => {
+                e.preventDefault()
+                console.log('Annotation button clicked')
+                navigate('/annotate')
+              }}
+              style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+            >
+              {t('annotation')}
+            </button>
+            <button 
+              className="futuristic-btn" 
+              onClick={(e) => {
+                e.preventDefault()
+                console.log('Share button clicked')
+                handleFeatureClick('share')
+              }}
+              style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+            >
+              {t('share')}
+            </button>
+            <button 
+              className="futuristic-btn" 
+              onClick={async () => {
+                console.log('WATERMARK TEST BUTTON CLICKED!')
+                if (pdfFiles.length === 0) {
+                  alert('Please upload a PDF file first!')
+                  return
+                }
+                
+                try {
+                  const { addWatermark } = await import('../utils/pdfAnnotations')
+                  const result = await addWatermark(pdfFiles[0].file, 'TEST WATERMARK')
+                  const url = URL.createObjectURL(result)
+                  setMergedPdfUrl({ url, name: 'test_watermarked.pdf' })
+                  alert('Watermark added successfully!')
+                } catch (error) {
+                  console.error('Watermark test error:', error)
+                  alert('Watermark failed: ' + error.message)
+                }
+              }}
+              style={{ 
+                cursor: 'pointer', 
+                pointerEvents: 'auto',
+                background: '#10b981',
+                color: 'white'
+              }}
+            >
+              TEST WATERMARK
+            </button>
           </div>
           {pdfFiles.length === 0 ? (
             <div className="welcome-section">
@@ -244,8 +383,8 @@ function Home() {
                       <Zap size={24} />
                     </div>
                     <div className="feature-content">
-                      <h3>Lightning Fast PDF Tools</h3>
-                      <p>Split PDF instantly and compress PDF online free in your browser</p>
+                      <h3>{t('lightningFast')}</h3>
+                      <p>{t('lightningFastDesc')}</p>
                     </div>
                   </div>
                   
@@ -254,8 +393,8 @@ function Home() {
                       <FileText size={24} />
                     </div>
                     <div className="feature-content">
-                      <h3>AI PDF Intelligence</h3>
-                      <p>AI PDF summarizer free and Ask questions to PDF (AI Q&A)</p>
+                      <h3>{t('aiIntelligence')}</h3>
+                      <p>{t('aiIntelligenceDesc')}</p>
                     </div>
                   </div>
                   
@@ -264,8 +403,8 @@ function Home() {
                       <Share2 size={24} />
                     </div>
                     <div className="feature-content">
-                      <h3>Seamless & Secure</h3>
-                      <p>Free unlimited PDF tools (no signup) with privacy-first design</p>
+                      <h3>{t('seamlessSecure')}</h3>
+                      <p>{t('seamlessSecureDesc')}</p>
                     </div>
                   </div>
                   
@@ -274,8 +413,8 @@ function Home() {
                       <Shield size={24} />
                     </div>
                     <div className="feature-content">
-                      <h3>Local & Offline</h3>
-                      <p>Local PDF tools (no server upload). Offline PDF tools for browser</p>
+                      <h3>{t('localOffline')}</h3>
+                      <p>{t('localOfflineDesc')}</p>
                     </div>
                   </div>
                 </div>
@@ -284,22 +423,61 @@ function Home() {
               <FileUpload onFilesAdded={handleFilesAdded} />
               
               <div className="features-showcase">
-                <h3>Powerful PDF Tools</h3>
+                <h3>{t('powerfullPdfTools')}</h3>
                 <div className="tool-grid">
                   <button className="tool-button" onClick={() => handleFeatureClick('merge')}>
-                    <FileText size={18} /> Merge PDF
+                    <FileText size={18} /> {t('merge')} PDF
                   </button>
-                  <button className="tool-button" onClick={() => navigate('/annotate')}>
-                    <Bookmark size={18} /> Add Page Numbers
+                  <button 
+                    className="tool-button" 
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      console.log('Page numbers button clicked')
+                      handleAnnotationFeature('pageNumbers')
+                    }}
+                    style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+                  >
+                    <Bookmark size={18} /> {t('addPageNumbers')}
                   </button>
-                  <button className="tool-button" onClick={() => navigate('/annotate')}>
-                    <Shield size={18} /> Add Watermark
+                  <button 
+                    className="tool-button" 
+                    onClick={async (e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      console.log('Direct watermark button clicked')
+                      
+                      if (pdfFiles.length === 0) {
+                        alert('Please upload a PDF file first!')
+                        return
+                      }
+                      
+                      const watermarkText = prompt('Enter watermark text:', 'CONFIDENTIAL')
+                      if (!watermarkText) return
+                      
+                      try {
+                        setIsLoading(true)
+                        const { addWatermark } = await import('../utils/pdfAnnotations')
+                        const result = await addWatermark(pdfFiles[0].file, watermarkText)
+                        const url = URL.createObjectURL(result)
+                        setMergedPdfUrl({ url, name: `${pdfFiles[0].name.replace('.pdf', '')}_watermarked.pdf` })
+                        alert('Watermark added successfully!')
+                      } catch (error) {
+                        console.error('Direct watermark error:', error)
+                        alert('Watermark failed: ' + error.message)
+                      } finally {
+                        setIsLoading(false)
+                      }
+                    }}
+                    style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+                  >
+                    <Shield size={18} /> {t('addWatermark')}
                   </button>
                   <button className="tool-button" onClick={() => handleFeatureClick('summarize')}>
-                    <FileSearch size={18} /> Summarize PDF (AI)
+                    <FileSearch size={18} /> {t('summarize')} PDF (AI)
                   </button>
                   <button className="tool-button" onClick={() => handleFeatureClick('ask')}>
-                    <MessageSquare size={18} /> Ask your PDF (AI)
+                    <MessageSquare size={18} /> {t('askPdf')} (AI)
                   </button>
                   <button className="tool-button" onClick={() => navigate('/images')}>
                     <FileText size={18} /> JPG → PDF
@@ -308,7 +486,7 @@ function Home() {
                     <FileText size={18} /> PNG → PDF
                   </button>
                   <button className="tool-button" onClick={() => navigate('/images')}>
-                    <FileText size={18} /> PDF → Images
+                    <FileText size={18} /> PDF → {t('images')}
                   </button>
                   <button className="tool-button" onClick={() => navigate('/office')}>
                     <FileText size={18} /> Word → PDF
@@ -320,7 +498,7 @@ function Home() {
                     <FileText size={18} /> PPT → PDF
                   </button>
                   <button className="tool-button" onClick={() => setShowShareModal(true)}>
-                    <Share2 size={18} /> Share
+                    <Share2 size={18} /> {t('share')}
                   </button>
                 </div>
               </div>
@@ -337,8 +515,8 @@ function Home() {
                       </div>
                     </div>
                     <div className="logo-text">
-                      <h1 className="logo-main clickable-title" onClick={handleTitleClick}>PDF Merger<span className="logo-ai">AI</span></h1>
-                      <p className="subtitle">Next-Gen PDF Processing powered by AI</p>
+                      <h1 className="logo-main clickable-title" onClick={(e) => { e.preventDefault(); handleTitleClick(); }}>{t('appTitle').split(' ')[0]} {t('appTitle').split(' ')[1]}<span className="logo-ai">{t('appTitle').split(' ')[2]}</span></h1>
+                      <p className="subtitle">{t('subtitle')}</p>
                     </div>
                   </div>
                   
@@ -346,12 +524,12 @@ function Home() {
                     <div className="stat-item">
                       <FileText size={16} />
                       <span className="stat-value">{pdfFiles.length}</span>
-                      <span className="stat-label">Files</span>
+                      <span className="stat-label">{t('files')}</span>
                     </div>
                     <div className="stat-item">
                       <Rocket size={16} />
                       <span className="stat-value">{shareStats.shares}</span>
-                      <span className="stat-label">Shares</span>
+                      <span className="stat-label">{t('shares')}</span>
                     </div>
                   </div>
                 </div>
@@ -364,7 +542,7 @@ function Home() {
                     title="Clear all files"
                   >
                     <Trash2 size={18} />
-                    Clear All
+                    {t('clearAll')}
                   </button>
                 </div>
               </div>
@@ -372,7 +550,7 @@ function Home() {
               <div className="content-sections">
                 <div className="files-section">
                   <div className="section-header">
-                    <h2>Selected Files ({pdfFiles.length})</h2>
+                    <h2>{t('selectedFiles')} ({pdfFiles.length})</h2>
                   </div>
                   
                   <FileUpload 
@@ -401,14 +579,14 @@ function Home() {
                     deletedPages={deletedPages}
                   />
                   
-                  {mergedPdf && (
+                  {(mergedPdf || mergedPdfUrl) && (
                     <div className="download-section futuristic-card">
-                      <h3>Download Merged PDF</h3>
+                      <h3>{t('downloadMergedPdf')}</h3>
                       <div className="download-info">
-                        <p>Your merged PDF contains bookmarks for easy navigation between original documents.</p>
+                        <p>{t('mergedPdfInfo')}</p>
                         <div className="bookmark-tip">
                           <Bookmark size={16} />
-                          <span>Tip: Use your PDF viewer's bookmark panel to jump between documents</span>
+                          <span>{t('bookmarkTip')}</span>
                         </div>
                       </div>
                       <div className="download-actions">
@@ -417,15 +595,15 @@ function Home() {
                           onClick={() => setShowPageIndexModal(true)}
                         >
                           <FileSearch size={20} />
-                          View Page Index
+                          {t('viewPageIndex')}
                         </button>
                         <a 
-                          href={mergedPdf.url} 
-                          download={mergedPdf.name || 'merged-document.pdf'}
+                          href={(mergedPdf || mergedPdfUrl)?.url} 
+                          download={(mergedPdf || mergedPdfUrl)?.name || 'processed-document.pdf'}
                           className="download-btn futuristic-btn primary"
                         >
                           <Download size={20} />
-                          Download PDF
+                          {t('downloadPdf')}
                         </a>
                       </div>
                     </div>
@@ -433,7 +611,7 @@ function Home() {
 
                   {splitResults.length > 0 && (
                     <div className="split-results">
-                      <h3>Split Results ({splitResults.length} files)</h3>
+                      <h3>{t('splitResults')} ({splitResults.length} {t('files')})</h3>
                       <div className="split-files">
                         {splitResults.map((result, index) => (
                           <div key={index} className="split-file-item futuristic-card">
@@ -473,20 +651,24 @@ function Home() {
         onClose={() => setShowPageIndexModal(false)}
         files={pdfFiles}
       />
-      {/* Internal SEO links */}
-      <div className="container" style={{ padding: 16 }}>
-        <nav className="muted" aria-label="Helpful links">
-          <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 12, listStyle: 'none', padding: 0, margin: 0 }}>
+      {/* Footer with SEO links */}
+      <footer className="seo-footer">
+        <nav aria-label="Helpful links">
+          <ul>
             <li><Link to="/summarize">How to summarize PDF with AI online</Link></li>
             <li><Link to="/ask">Chat with research paper PDF online</Link></li>
             <li><Link to="/images">Convert JPG to PDF online free</Link></li>
             <li><Link to="/office">Convert docx to PDF free tool</Link></li>
             <li><Link to="/annotate">Add watermark to PDF online</Link></li>
+            <li><Link to="/about">About</Link></li>
+            <li><Link to="/privacy">Privacy</Link></li>
+            <li><Link to="/terms">Terms</Link></li>
+            <li><Link to="/backup">Backup</Link></li>
             <li><Link to="/faq">FAQ</Link></li>
             <li><Link to="/blog">Blog</Link></li>
           </ul>
         </nav>
-      </div>
+      </footer>
     </div>
   )
 }

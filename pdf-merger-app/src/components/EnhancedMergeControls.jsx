@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useToast } from './Toast'
-import { PDFDocument, rgb } from 'pdf-lib'
+import '../utils/pdfWorker'
+import { mergePDFs, splitPDF } from '../utils/simplePdfMerger'
 import { FileText, Download, Scissors, RotateCw, Zap, Bookmark } from 'lucide-react'
 import './EnhancedMergeControls.css'
 
@@ -32,151 +33,16 @@ export function EnhancedMergeControls({
     setIsLoading(true)
     
     try {
-      setProgress({ current: 0, total: files.length, label: 'Preparing files…' })
-      const mergedPdf = await PDFDocument.create()
-      const outline = []
-      const pageIndexMap = [] // Track which file each page came from
-      let currentPageIndex = 0
+      setProgress({ current: 0, total: files.length, label: 'Merging PDFs…' })
       
-      // Process each file
-      for (const file of files) {
-        const fileArrayBuffer = await file.file.arrayBuffer()
-        const pdfDoc = await PDFDocument.load(fileArrayBuffer)
-        
-        // Get pages to copy (excluding deleted pages)
-        const pagesToCopy = []
-        const totalPages = pdfDoc.getPageCount()
-        
-        for (let i = 0; i < totalPages; i++) {
-          if (!deletedPages[file.id] || !deletedPages[file.id].includes(i)) {
-            pagesToCopy.push(i)
-          }
-        }
-        
-        // Add bookmark for this file if enabled
-        if (mergeOptions.addBookmarks && pagesToCopy.length > 0) {
-          outline.push({
-            title: file.name.replace('.pdf', ''),
-            page: currentPageIndex
-          })
-        }
-        
-        // Track page origins for index map
-        for (const pageIndex of pagesToCopy) {
-          pageIndexMap.push({
-            fileName: file.name.replace('.pdf', ''),
-            originalPage: pageIndex + 1,
-            mergedPage: currentPageIndex + 1
-          })
-          currentPageIndex++
-        }
-        
-        // Copy pages to merged document
-        for (const pageIndex of pagesToCopy) {
-          const [copiedPage] = await mergedPdf.copyPages(pdfDoc, [pageIndex])
-          const newPage = mergedPdf.addPage(copiedPage)
-          
-          // Apply rotation if needed
-          const rotation = fileRotations[file.id]?.[pageIndex]
-          if (rotation) {
-            newPage.setRotation(rotation)
-          }
-        }
-        setProgress(p => ({ ...p, current: p.current + 1, label: `Merging ${file.name}…` }))
-      }
+      const fileObjects = files.map(f => f.file)
+      const mergedBlob = await mergePDFs(fileObjects)
+      const mergedPdfUrl = URL.createObjectURL(mergedBlob)
       
-      // Add bookmarks/outline to the PDF if enabled
-      if (mergeOptions.addBookmarks && outline.length > 0) {
-        try {
-          // Create a simple outline structure
-          const outlineRef = mergedPdf.context.obj({
-            Type: 'Outlines',
-            First: null,
-            Last: null,
-            Count: outline.length
-          })
-          
-          mergedPdf.catalog.set(PDFDocument.nameOf('Outlines'), outlineRef)
-          
-          // Add each bookmark as an outline item
-          let prevOutlineItem = null
-          for (let i = 0; i < outline.length; i++) {
-            const item = outline[i]
-            const pageRef = mergedPdf.getPage(item.page).ref
-            
-            const outlineItem = mergedPdf.context.obj({
-              Title: item.title,
-              Parent: outlineRef,
-              Dest: [pageRef, PDFDocument.nameOf('XYZ'), 0, mergedPdf.getPage(item.page).getHeight(), null]
-            })
-            
-            if (prevOutlineItem) {
-              prevOutlineItem.set(PDFDocument.nameOf('Next'), outlineItem)
-              outlineItem.set(PDFDocument.nameOf('Prev'), prevOutlineItem)
-            } else {
-              outlineRef.set(PDFDocument.nameOf('First'), outlineItem)
-            }
-            
-            if (i === outline.length - 1) {
-              outlineRef.set(PDFDocument.nameOf('Last'), outlineItem)
-            }
-            
-            mergedPdf.context.register(outlineItem)
-            prevOutlineItem = outlineItem
-          }
-          
-          mergedPdf.context.register(outlineRef)
-        } catch (error) {
-          console.warn('Could not add bookmarks to PDF:', error)
-          // Continue without bookmarks if there's an error
-        }
-      }
-      
-      // Add a page index as the first page of the document
-      if (mergeOptions.addPageIndex && pageIndexMap.length > 0) {
-        try {
-          // Create index content as text
-          let indexContent = "PDF MERGE INDEX\n\n"
-          indexContent += "Page Origin Reference\n"
-          indexContent += `Created: ${new Date().toLocaleDateString()}\n\n`
-          
-          let currentFile = ''
-          for (let i = 0; i < Math.min(pageIndexMap.length, 100); i++) { // Limit to first 100 entries
-            const entry = pageIndexMap[i]
-            
-            // Add file name header if new file
-            if (entry.fileName !== currentFile) {
-              currentFile = entry.fileName
-              indexContent += `\n${currentFile.toUpperCase()}:\n`
-            }
-            
-            // Add page entry
-            indexContent += `  Page ${entry.mergedPage}: Originally page ${entry.originalPage}\n`
-          }
-          
-          // For now, we'll show this index in the download info
-          // In a future enhancement, we could add it as an actual page in the PDF
-          // For now, we'll store it in localStorage so it can be accessed
-          localStorage.setItem('pdfPageIndex', JSON.stringify({
-            content: indexContent,
-            files: files.map(f => f.name.replace('.pdf', '')),
-            map: pageIndexMap
-          }))
-        } catch (error) {
-          console.warn('Could not create page index:', error)
-        }
-      }
-      
-      // Optimize if requested
-      if (mergeOptions.optimizeFileSize) {
-        // Basic optimization - could be enhanced
-      }
-      
-      const mergedPdfBytes = await mergedPdf.save()
-      const mergedPdfBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' })
-      const mergedPdfUrl = URL.createObjectURL(mergedPdfBlob)
-      
-      onMergeComplete({ url: mergedPdfUrl, name: (outputName && outputName.trim()) || 'merged-document.pdf' })
+      onMergeComplete({ 
+        url: mergedPdfUrl, 
+        name: (outputName && outputName.trim()) || 'merged-document.pdf' 
+      })
       notify('Merge successful. Your PDF is ready to download.', 'success')
     } catch (error) {
       console.error('Error merging PDFs:', error)
@@ -195,60 +61,14 @@ export function EnhancedMergeControls({
       const splitResults = []
       
       for (const file of files) {
-        const fileArrayBuffer = await file.file.arrayBuffer()
-        const pdfDoc = await PDFDocument.load(fileArrayBuffer)
-        const totalPages = pdfDoc.getPageCount()
-        
-        const include = (i) => !deletedPages[file.id] || !deletedPages[file.id].includes(i)
-
-        if (splitMode === 'pages') {
-          for (let i = 0; i < totalPages; i++) {
-            if (include(i)) {
-              const newPdf = await PDFDocument.create()
-              const [copiedPage] = await newPdf.copyPages(pdfDoc, [i])
-              newPdf.addPage(copiedPage)
-              const newPdfBytes = await newPdf.save()
-              const newPdfBlob = new Blob([newPdfBytes], { type: 'application/pdf' })
-              const newPdfUrl = URL.createObjectURL(newPdfBlob)
-              splitResults.push({ name: `${file.name.replace('.pdf', '')}_page_${i + 1}.pdf`, url: newPdfUrl })
-            }
-          }
-        } else if (splitMode === 'ranges') {
-          const ranges = splitRanges.split(',').map(r => r.trim()).filter(Boolean)
-          let idx = 1
-          for (const r of ranges) {
-            const [startStr, endStr] = r.split('-')
-            const start = Math.max(1, parseInt(startStr, 10) || 1)
-            const end = Math.min(totalPages, parseInt(endStr ?? startStr, 10) || start)
-            const newPdf = await PDFDocument.create()
-            for (let p = start - 1; p < end; p++) {
-              if (include(p)) {
-                const [copiedPage] = await newPdf.copyPages(pdfDoc, [p])
-                newPdf.addPage(copiedPage)
-              }
-            }
-            const newPdfBytes = await newPdf.save()
-            const newPdfBlob = new Blob([newPdfBytes], { type: 'application/pdf' })
-            const newPdfUrl = URL.createObjectURL(newPdfBlob)
-            splitResults.push({ name: `${file.name.replace('.pdf', '')}_part_${idx++}.pdf`, url: newPdfUrl })
-          }
-        } else if (splitMode === 'every') {
-          const n = Math.max(1, parseInt(splitEvery, 10) || 1)
-          let part = 1
-          for (let i = 0; i < totalPages; i += n) {
-            const newPdf = await PDFDocument.create()
-            for (let p = i; p < Math.min(i + n, totalPages); p++) {
-              if (include(p)) {
-                const [copiedPage] = await newPdf.copyPages(pdfDoc, [p])
-                newPdf.addPage(copiedPage)
-              }
-            }
-            const newPdfBytes = await newPdf.save()
-            const newPdfBlob = new Blob([newPdfBytes], { type: 'application/pdf' })
-            const newPdfUrl = URL.createObjectURL(newPdfBlob)
-            splitResults.push({ name: `${file.name.replace('.pdf', '')}_part_${part++}.pdf`, url: newPdfUrl })
-          }
-        }
+        const results = await splitPDF(file.file)
+        results.forEach((result, index) => {
+          const url = URL.createObjectURL(result.blob)
+          splitResults.push({ 
+            name: `${file.name.replace('.pdf', '')}_${result.name}`, 
+            url 
+          })
+        })
       }
       
       onSplitComplete(splitResults)

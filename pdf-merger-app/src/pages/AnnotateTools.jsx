@@ -28,8 +28,15 @@ function AnnotateTools() {
   const [downloadUrl, setDownloadUrl] = useState('')
 
   const onPdfFiles = (files) => {
+    console.log('Files received:', files)
     const f = files.find(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'))
-    if (f) setPdfFile(f)
+    console.log('PDF file found:', f)
+    if (f) {
+      setPdfFile(f)
+      console.log('PDF file set:', f.name)
+    } else {
+      console.log('No PDF file found in:', files)
+    }
   }
 
   const fileSizeMB = pdfFile ? (pdfFile.size / (1024 * 1024)).toFixed(1) : null
@@ -69,7 +76,18 @@ function AnnotateTools() {
     setIsBusy(true)
     setShowConfirm(false)
     try {
-      const { pdfjsLib } = await import('../utils/pdfSetup.js')
+      // Wait for PDF.js to load
+      let attempts = 0
+      while (!window.pdfjsLib && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+        attempts++
+      }
+      
+      if (!window.pdfjsLib) {
+        throw new Error('PDF.js library not loaded')
+      }
+      
+      const pdfjsLib = window.pdfjsLib
       const ab = await pdfFile.arrayBuffer()
       const loadingTask = pdfjsLib.getDocument({ data: ab })
       const doc = await loadingTask.promise
@@ -156,31 +174,59 @@ function AnnotateTools() {
   }
 
   const addWatermark = async (text = 'CONFIDENTIAL') => {
-    if (!pdfFile) return
+    if (!pdfFile) {
+      alert('Please select a PDF file first')
+      return
+    }
+    
     setIsBusy(true)
     try {
+      console.log('Starting watermark process...')
       const ab = await pdfFile.arrayBuffer()
       const pdfDoc = await PDFDocument.load(ab)
-      const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
       const pages = pdfDoc.getPages()
       const col = hexToRgb(wmColor)
-      pages.forEach((page) => {
+      
+      console.log(`Processing ${pages.length} pages...`)
+      
+      pages.forEach((page, index) => {
         const { width, height } = page.getSize()
         let x = width/2, y = height/2
+        
         if (wmPosition === 'tl') { x = 40; y = height - 60 }
         if (wmPosition === 'tr') { x = width - 40; y = height - 60 }
         if (wmPosition === 'bl') { x = 40; y = 40 }
         if (wmPosition === 'br') { x = width - 40; y = 40 }
-        const angle = wmPosition === 'center' ? 30 : 0
-        page.drawText(text, { x, y, rotate: { type: 'degrees', angle }, size: wmFontSize, font, color: rgb(col.r, col.g, col.b), opacity: wmOpacity })
+        
+        // Simplified watermark without rotation for now
+        page.drawText(text, { 
+          x, 
+          y, 
+          size: wmFontSize, 
+          font, 
+          color: rgb(col.r, col.g, col.b), 
+          opacity: wmOpacity 
+        })
+        
+        console.log(`Watermark added to page ${index + 1}`)
       })
+      
+      console.log('Saving PDF...')
       const bytes = await pdfDoc.save()
       const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }))
+      
       const a = document.createElement('a')
       a.href = url
-      a.download = 'watermarked.pdf'
+      a.download = `${pdfFile.name.replace('.pdf', '')}_watermarked.pdf`
       a.click()
       URL.revokeObjectURL(url)
+      
+      notify('Watermark added successfully!', 'success')
+      console.log('Watermark process completed')
+    } catch (error) {
+      console.error('Watermark error:', error)
+      notify(`Failed to add watermark: ${error.message}`, 'error')
     } finally {
       setIsBusy(false)
     }
@@ -276,9 +322,13 @@ function AnnotateTools() {
             <div className="futuristic-card" style={{ padding: 16 }}>
               <h3>Upload PDF</h3>
               <FileUpload onFilesAdded={onPdfFiles} />
-              {pdfFile && (
-                <div className="muted" style={{ marginTop: 8 }}>
-                  <strong>Selected:</strong> {pdfFile.name} ({fileSizeMB} MB)
+              {pdfFile ? (
+                <div className="futuristic-card" style={{ padding: 12, marginTop: 8, background: '#10b981', color: 'white' }}>
+                  <strong>✓ PDF Selected:</strong> {pdfFile.name} ({fileSizeMB} MB)
+                </div>
+              ) : (
+                <div className="futuristic-card" style={{ padding: 12, marginTop: 8, background: '#ef4444', color: 'white' }}>
+                  <strong>⚠ No PDF Selected</strong> - Please choose a PDF file to continue
                 </div>
               )}
               {pdfFile && pdfFile.size > 500 * 1024 * 1024 && (
@@ -288,7 +338,18 @@ function AnnotateTools() {
               )}
               <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap', marginTop:8 }}>
                 <button className="futuristic-btn" onClick={() => document.getElementById('annotate-input').click()}>Choose PDF</button>
-                <input id="annotate-input" type="file" accept="application/pdf" style={{ display:'none' }} onChange={(e) => onPdfFiles(Array.from(e.target.files || []))} />
+                <input 
+                  id="annotate-input" 
+                  type="file" 
+                  accept="application/pdf,.pdf" 
+                  style={{ display:'none' }} 
+                  onChange={(e) => {
+                    console.log('File input changed:', e.target.files)
+                    if (e.target.files && e.target.files.length > 0) {
+                      onPdfFiles(Array.from(e.target.files))
+                    }
+                  }} 
+                />
                 <label>Watermark text <input type="text" value={wmText} onChange={(e) => setWmText(e.target.value)} /></label>
                 <label>Watermark position
                   <select value={wmPosition} onChange={(e) => setWmPosition(e.target.value)} style={{ marginLeft: 6 }}>
@@ -326,6 +387,40 @@ function AnnotateTools() {
                 <button className="action-card futuristic-card" onClick={generatePreview} disabled={!pdfFile || isBusy}>
                   <div className="action-content"><div className="action-text"><h4>{isBusy ? 'Preparing…' : 'Preview Changes'}</h4><p>See the first pages with overlay</p></div></div>
                   <span className="action-indicator">Open preview →</span>
+                </button>
+                <button 
+                  className="futuristic-btn" 
+                  onClick={(e) => {
+                    e.preventDefault()
+                    console.log('Watermark button clicked')
+                    console.log('pdfFile:', pdfFile)
+                    console.log('wmText:', wmText)
+                    if (!pdfFile) {
+                      alert('Please upload a PDF file first!')
+                      return
+                    }
+                    if (!wmText) {
+                      alert('Please enter watermark text!')
+                      return
+                    }
+                    addWatermark(wmText)
+                  }} 
+                  disabled={isBusy}
+                  style={{ 
+                    marginLeft: 12,
+                    opacity: (!pdfFile || !wmText) ? 0.5 : 1,
+                    cursor: (!pdfFile || !wmText) ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {!pdfFile ? 'Upload PDF First' : !wmText ? 'Enter Text' : 'Add Watermark Only'}
+                </button>
+                <button 
+                  className="futuristic-btn" 
+                  onClick={addPageNumbers} 
+                  disabled={!pdfFile || isBusy}
+                  style={{ marginLeft: 12 }}
+                >
+                  Add Page Numbers Only
                 </button>
               </div>
             </div>

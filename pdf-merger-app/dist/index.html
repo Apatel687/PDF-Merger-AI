@@ -91,8 +91,47 @@
     
     <!-- PDF.js setup - using local files for better reliability -->
     <script src="/pdf.min.js"></script>
-    <script type="module" crossorigin src="/assets/js/index-CtW4yLHI.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/css/index-CYWO1cPJ.css">
+    
+    <!-- Theme initialization to prevent flash -->
+    <script>
+      (function() {
+        const savedThemeMode = localStorage.getItem('themeMode') || 'system'
+        const savedAccentColor = localStorage.getItem('accentColor')
+        
+        const root = document.documentElement
+        
+        // Apply dark mode based on theme mode
+        let isDark = false
+        if (savedThemeMode === 'system') {
+          isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        } else {
+          isDark = savedThemeMode === 'dark'
+        }
+        
+        root.classList.toggle('dark', isDark)
+        
+        // Apply accent color immediately
+        if (savedAccentColor) {
+          root.style.setProperty('--accent-color', savedAccentColor)
+          root.style.setProperty('--ai-gradient-start', savedAccentColor)
+          
+          // Calculate darker gradient end
+          const hex = savedAccentColor.replace('#', '')
+          const r = parseInt(hex.substr(0, 2), 16)
+          const g = parseInt(hex.substr(2, 2), 16)
+          const b = parseInt(hex.substr(4, 2), 16)
+          
+          const newR = Math.max(0, Math.min(255, r * 0.8))
+          const newG = Math.max(0, Math.min(255, g * 0.8))
+          const newB = Math.max(0, Math.min(255, b * 0.8))
+          
+          const gradientEnd = `#${Math.round(newR).toString(16).padStart(2, '0')}${Math.round(newG).toString(16).padStart(2, '0')}${Math.round(newB).toString(16).padStart(2, '0')}`
+          root.style.setProperty('--ai-gradient-end', gradientEnd)
+        }
+      })()
+    </script>
+    <script type="module" crossorigin src="/assets/js/index-DY5MU0Ih.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/css/index-BNImlRem.css">
   </head>
   <body>
     <!-- Hidden SEO Content for Search Engines -->

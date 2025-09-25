@@ -1,0 +1,133 @@
+.settings-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 10002;
+  min-width: 280px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.dark .settings-notification {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.settings-notification.visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.settings-notification.hidden {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.settings-notification.success .notification-icon {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.settings-notification.error .notification-icon {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.settings-notification.warning .notification-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.settings-notification.info .notification-icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.dark .settings-notification.success .notification-icon {
+  background: #166534;
+  color: #4ade80;
+}
+
+.dark .settings-notification.error .notification-icon {
+  background: #7f1d1d;
+  color: #f87171;
+}
+
+.dark .settings-notification.warning .notification-icon {
+  background: #92400e;
+  color: #fbbf24;
+}
+
+.dark .settings-notification.info .notification-icon {
+  background: #1e40af;
+  color: #60a5fa;
+}
+
+.notification-message {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.dark .notification-message {
+  color: #f8fafc;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.dark .notification-close:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+
+/* Animation for entrance */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.settings-notification.visible {
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

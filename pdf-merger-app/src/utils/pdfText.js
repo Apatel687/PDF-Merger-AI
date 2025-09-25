@@ -2,49 +2,146 @@
 // Assumes PDF.js is already configured by ./utils/pdfSetup.js
 
 export async function extractPdfTextWithPages(file) {
-  const arrayBuffer = await file.arrayBuffer()
-  // pdfjsLib is exposed globally by pdf.min.js
-  const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer })
-  const pdf = await loadingTask.promise
+  try {
+    const arrayBuffer = await file.arrayBuffer()
+    
+    // Wait for PDF.js to load if not ready
+    let attempts = 0
+    while (!window.pdfjsLib && attempts < 50) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+      attempts++
+    }
+    
+    if (!window.pdfjsLib) {
+      // Try to load PDF.js if not available
+      await loadPDFJS()
+    }
+    
+    const loadingTask = window.pdfjsLib.getDocument({ 
+      data: arrayBuffer,
+      verbosity: 0
+    })
+    
+    const pdf = await loadingTask.promise
+    
+    if (!pdf || pdf.numPages === 0) {
+      throw new Error('Invalid PDF or no pages found')
+    }
 
-  let fullText = ''
-  const pages = []
+    let fullText = ''
+    const pages = []
 
-  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-    const page = await pdf.getPage(pageNum)
-    const textContent = await page.getTextContent()
-    const pageText = textContent.items.map(item => item.str).join(' ')
-    pages.push({ pageNumber: pageNum, text: pageText })
-    fullText += `\n\n[Page ${pageNum}]\n${pageText}`
+    for (let pageNum = 1; pageNum <= Math.min(pdf.numPages, 10); pageNum++) {
+      try {
+        const page = await pdf.getPage(pageNum)
+        const textContent = await page.getTextContent()
+        const pageText = textContent.items
+          .filter(item => item.str && item.str.trim())
+          .map(item => item.str)
+          .join(' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+        
+        if (pageText) {
+          pages.push({ pageNumber: pageNum, text: pageText })
+          fullText += `${pageText} `
+        }
+      } catch (pageError) {
+        console.warn(`Error extracting text from page ${pageNum}:`, pageError)
+        continue
+      }
+    }
+
+    if (!fullText.trim()) {
+      throw new Error('No readable text found in PDF')
+    }
+
+    return { fullText: fullText.trim(), pages }
+  } catch (error) {
+    console.error('PDF text extraction error:', error)
+    throw new Error(`Failed to extract text: ${error.message}`)
   }
-
-  return { fullText: fullText.trim(), pages }
 }
 
-export function simpleSummarize(text, sentenceCount = 5) {
-  if (!text) return ''
-  const sentences = text
-    .replace(/\s+/g, ' ')
+// Helper function to load PDF.js
+function loadPDFJS() {
+  return new Promise((resolve, reject) => {
+    if (window.pdfjsLib) {
+      resolve()
+      return
+    }
+    
+    const script = document.createElement('script')
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
+    script.onload = () => {
+      if (window.pdfjsLib) {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+        resolve()
+      } else {
+        reject(new Error('PDF.js failed to load'))
+      }
+    }
+    script.onerror = () => reject(new Error('Failed to load PDF.js script'))
+    document.head.appendChild(script)
+  })
+}
+
+export function simpleSummarize(text, sentenceCount = 3) {
+  if (!text || typeof text !== 'string') {
+    throw new Error('Invalid text input for summarization')
+  }
+  
+  // Clean and split text into sentences
+  const cleanText = text.replace(/\s+/g, ' ').trim()
+  if (cleanText.length < 50) {
+    throw new Error('Text too short to summarize')
+  }
+  
+  const sentences = cleanText
     .split(/(?<=[.!?])\s+/)
-    .filter(s => s && s.length > 0)
+    .filter(s => s && s.trim().length > 10)
+    .map(s => s.trim())
 
-  if (sentences.length <= sentenceCount) return sentences.join(' ')
+  if (sentences.length === 0) {
+    throw new Error('No valid sentences found for summarization')
+  }
+  
+  if (sentences.length <= sentenceCount) {
+    return sentences.join(' ')
+  }
 
-  // Frequency-based extractive summary
-  const stopwords = new Set(['the','is','at','of','on','and','a','to','in','for','with','as','by','an','be','are','or','from','that','this','it','we','you'])
+  // Simple extractive summarization
+  const stopwords = new Set([
+    'the', 'is', 'at', 'of', 'on', 'and', 'a', 'to', 'in', 'for', 'with', 'as', 'by', 'an', 'be', 'are', 'or', 'from', 'that', 'this', 'it', 'we', 'you', 'but', 'not', 'or', 'as', 'what', 'go', 'their'
+  ])
+  
   const wordFreq = new Map()
-  const sentenceTokens = sentences.map(s => s.toLowerCase().match(/[a-z0-9]+/g) || [])
+  const sentenceTokens = sentences.map(s => {
+    const tokens = s.toLowerCase().match(/[a-z0-9]+/g) || []
+    return tokens.filter(w => w.length > 2 && !stopwords.has(w))
+  })
+  
+  // Count word frequencies
   sentenceTokens.forEach(tokens => {
     tokens.forEach(w => {
-      if (stopwords.has(w)) return
       wordFreq.set(w, (wordFreq.get(w) || 0) + 1)
     })
   })
-  const scores = sentenceTokens.map(tokens => tokens.reduce((acc, w) => acc + (wordFreq.get(w) || 0), 0))
+  
+  // Score sentences based on word frequencies
+  const scores = sentenceTokens.map(tokens => {
+    if (tokens.length === 0) return 0
+    const score = tokens.reduce((acc, w) => acc + (wordFreq.get(w) || 0), 0)
+    return score / tokens.length // Normalize by sentence length
+  })
+  
+  // Select top sentences
   const indexed = scores.map((score, idx) => ({ idx, score }))
   indexed.sort((a, b) => b.score - a.score)
   const top = indexed.slice(0, sentenceCount).sort((a, b) => a.idx - b.idx)
-  return top.map(x => sentences[x.idx]).join(' ')
+  
+  const summary = top.map(x => sentences[x.idx]).join(' ')
+  return summary || sentences.slice(0, sentenceCount).join(' ')
 }
 
 export function chunkTextByPages(pages, maxCharsPerChunk = 1200) {

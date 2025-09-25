@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        :root {
+            --bg-color: white;
+            --text-color: black;
+        }
+        
+        .dark {
+            --bg-color: #1a1a1a;
+            --text-color: white;
+        }
+        
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Theme Test</h1>
+    <button onclick="setLight()">Light</button>
+    <button onclick="setDark()">Dark</button>
+    <button onclick="toggleTheme()">Toggle</button>
+    
+    <script>
+        function setLight() {
+            console.log('Setting light theme');
+            document.documentElement.classList.remove('dark');
+        }
+        
+        function setDark() {
+            console.log('Setting dark theme');
+            document.documentElement.classList.add('dark');
+        }
+        
+        function toggleTheme() {
+            console.log('Toggling theme');
+            document.documentElement.classList.toggle('dark');
+        }
+    </script>
+</body>
+</html>

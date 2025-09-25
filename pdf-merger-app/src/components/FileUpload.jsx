@@ -1,9 +1,11 @@
 import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { FileText, Upload, HardDrive, AlertCircle, CheckCircle } from 'lucide-react'
+import { useTranslation } from '../hooks/useTranslation'
 import './FileUpload.css'
 
 export function FileUpload({ onFilesAdded, isCompact = false }) {
+  const { t } = useTranslation()
   const [uploadStatus, setUploadStatus] = useState(null)
   
   const validatePDFFile = async (file) => {
@@ -71,7 +73,7 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
         }
         
         if (validFiles.length > 0) {
-          setUploadStatus({ type: 'success', message: `Added ${validFiles.length} file(s)` })
+          setUploadStatus({ type: 'success', message: `${t('added')} ${validFiles.length} ${t('files')}` })
           onFilesAdded(validFiles)
           setTimeout(() => setUploadStatus(null), 3000)
         }
@@ -104,7 +106,7 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
       return (
         <div className="upload-status validating" role="status" aria-live="polite" aria-busy="true">
           <div className="spinner"></div>
-          <span>Validating files...</span>
+          <span>{t('validatingFiles')}</span>
           <progress className="upload-progress" aria-hidden="true"></progress>
         </div>
       )
@@ -129,7 +131,7 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
           <input {...getInputProps()} aria-label="Choose PDF files" />
           <div className="compact-upload-area futuristic-card">
             <Upload size={20} />
-            <span>Add more PDFs</span>
+            <span>{t('addMorePdfs')}</span>
           </div>
         </div>
         {renderStatus()}
@@ -147,15 +149,15 @@ export function FileUpload({ onFilesAdded, isCompact = false }) {
             <Upload size={24} className="upload-overlay" />
           </div>
           <h3 className="upload-title">
-            {isDragActive ? 'Drop your PDFs here' : 'Drag & Drop PDF Files'}
+            {isDragActive ? t('dropPdfsHere') : t('uploadTitle')}
           </h3>
-          <p className="upload-subtitle">or click to browse your files</p>
+          <p className="upload-subtitle">{t('uploadSubtitle')}</p>
           <button className="browse-btn futuristic-btn primary" type="button" aria-label="Browse files">
             <HardDrive size={16} />
-            Browse Files
+            {t('browseFiles')}
           </button>
           <p className="upload-info">
-            Supports PDF files only • Max file size: 500MB
+            {t('uploadInfo')}
           </p>
         </div>
       </div>

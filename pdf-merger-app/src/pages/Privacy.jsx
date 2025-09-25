@@ -1,10 +1,12 @@
-import { useNavigate } from 'react-router-dom'
-import ThemeSwitcher from '../components/ThemeSwitcher'
+import { useNavigate, Link } from 'react-router-dom'
+import SimpleLanguageSwitcher from '../components/SimpleLanguageSwitcher'
 import SEO from '../components/SEO'
-import { Shield, Lock, Eye, Database } from 'lucide-react'
+import { Shield, Lock, Eye, Database, FileText, Zap, Sparkles } from 'lucide-react'
+import { useTranslation } from '../hooks/useTranslation'
 
 function Privacy() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   return (
     <div className="app">
@@ -22,21 +24,26 @@ function Privacy() {
           'url': 'https://pdf-merger-app.netlify.app/privacy'
         }}
       />
-      <ThemeSwitcher />
-
       <header className="app-header futuristic-card">
         <div className="header-content">
           <div className="logo">
+            <div className="logo-icon-container" onClick={(e) => { e.preventDefault(); navigate('/'); }} style={{ cursor: 'pointer' }}>
+              <div className="logo-icon-wrapper">
+                <Sparkles size={40} className="logo-icon" />
+                <Zap size={20} className="logo-accent" />
+              </div>
+            </div>
             <div className="logo-text">
-              <h1 className="logo-title clickable-title" onClick={() => navigate('/') }>
+              <h1 className="logo-title clickable-title" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
                 <span className="logo-main">PDF Merger</span>
                 <span className="logo-ai">AI</span>
               </h1>
               <p className="subtitle">Next-Gen PDF Processing powered by AI</p>
             </div>
           </div>
-          <div>
-            <button className="futuristic-btn" onClick={() => navigate(-1)}>← Back</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <SimpleLanguageSwitcher />
+            <button className="futuristic-btn" onClick={() => navigate(-1)}>{t('back')}</button>
           </div>
         </div>
       </header>
@@ -183,6 +190,25 @@ function Privacy() {
           </div>
         </div>
       </main>
+
+      {/* Footer with SEO links */}
+      <footer className="seo-footer">
+        <nav aria-label="Helpful links">
+          <ul>
+            <li><Link to="/summarize">How to summarize PDF with AI online</Link></li>
+            <li><Link to="/ask">Chat with research paper PDF online</Link></li>
+            <li><Link to="/images">Convert JPG to PDF online free</Link></li>
+            <li><Link to="/office">Convert docx to PDF free tool</Link></li>
+            <li><Link to="/annotate">Add watermark to PDF online</Link></li>
+            <li><Link to="/about">About</Link></li>
+            <li><Link to="/privacy">Privacy</Link></li>
+            <li><Link to="/terms">Terms</Link></li>
+            <li><Link to="/backup">Backup</Link></li>
+            <li><Link to="/faq">FAQ</Link></li>
+            <li><Link to="/blog">Blog</Link></li>
+          </ul>
+        </nav>
+      </footer>
     </div>
   )
 }
