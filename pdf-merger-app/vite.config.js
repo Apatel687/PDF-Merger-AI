@@ -1,24 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { copyFileSync } from 'fs'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    {
-      name: 'copy-seo-files',
-      writeBundle() {
-        try {
-          copyFileSync('public/sitemap.xml', 'dist/sitemap.xml')
-          copyFileSync('public/robots.txt', 'dist/robots.txt')
-          console.log('SEO files copied')
-        } catch (error) {
-          console.error('SEO copy failed:', error)
-        }
-      }
-    }
-  ],
+  plugins: [react()],
   base: '/',
   publicDir: 'public',
   build: {
