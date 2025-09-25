@@ -1117,6 +1117,28 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Performance optimizations */
+* {
+  will-change: auto;
+}
+
+.futuristic-card,
+.feature-card,
+.tool-button,
+.action-card {
+  contain: layout style;
+  transform: translateZ(0);
+}
+
+/* Reduce animations on scroll */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Prevent layout shifts and navigation glitches */
 .app {
   min-height: 100vh;
@@ -1136,6 +1158,7 @@ html {
 .tool-button {
   transform: translateZ(0);
   backface-visibility: hidden;
+  contain: layout style paint;
 }
 
 button, .tool-button, .futuristic-btn {
@@ -1159,14 +1182,14 @@ button:disabled, .tool-button:disabled, .futuristic-btn:disabled {
 *,
 *::before,
 *::after {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 /* Override transitions for animations that should be fast */
 .futuristic-btn,
 .tool-button,
 .feature-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease !important;
   will-change: transform;
 }
 
